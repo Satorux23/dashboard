@@ -128,7 +128,6 @@
         
         @keyframes radarPulseError { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(255, 51, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); } }
         
-        /* ADAPTAÇÃO DAS CORES DO MAPA E POPUPS PARA OBEDECER AO TEMA */
         .city-label-map { background-color: transparent !important; border: none !important; box-shadow: none !important; color: var(--text-main) !important; font-family: 'Inter', sans-serif !important; font-size: 0.75rem !important; font-weight: 800 !important; text-shadow: 0 2px 4px var(--bg-color), 0 0 2px var(--bg-color) !important; text-transform: uppercase !important; letter-spacing: 1px !important; pointer-events: none !important; margin-top: -2px !important; }
         .leaflet-tooltip.city-label-map::before { display: none !important; }
         .leaflet-interactive { cursor: pointer !important; }
@@ -218,8 +217,9 @@
         .btn-ver-validados { background: transparent; color: var(--neon-error); border: 1px solid var(--neon-error); padding: 10px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;}
         .btn-ver-validados:hover { background: var(--neon-error); color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);}
         
-        .leaflet-container { background: var(--bg-color); }
+        .leaflet-container { background: transparent !important; }
         .leaflet-control-attribution { display: none; }
+        .leaflet-tile-pane { opacity: 0.35; filter: grayscale(100%) contrast(1.2); }
 
         .share-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px;}
         .share-card-info h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 5px; font-weight: 800;}
@@ -551,17 +551,17 @@
                 '--neon-error': '#ff3366',
                 '--neon-blue': '#00d2ff'
             },
-           senac: {
-                '--bg-color': '#001a33', // Azul Marinho Senac
+            senac: {
+                '--bg-color': '#001a33',
                 '--panel-bg': 'linear-gradient(145deg, #00294d 0%, #001429 100%)', 
                 '--panel-border': '1px solid rgba(255, 255, 255, 0.08)',
                 '--text-main': '#ffffff',
-                '--text-muted': '#93a5b8', // Cinza azulado para leitura suave
-                '--neon-ok': '#10b981', // Verde claro para Conformidade (OK)
-                '--neon-alert': '#fbbf24', // Amarelo para Alerta
+                '--text-muted': '#93a5b8',
+                '--neon-ok': '#10b981',
+                '--neon-alert': '#fbbf24',
                 '--neon-orange': '#f59e0b',
-                '--neon-error': '#ef4444', // Vermelho para Risco Crítico
-                '--neon-blue': '#f37021' // Laranja Oficial Senac para Destaques/Totais
+                '--neon-error': '#ef4444',
+                '--neon-blue': '#f37021'
             },
             emerald: {
                 '--bg-color': '#06120e',
@@ -908,7 +908,7 @@
 
                 for (let s in countSetor) {
                     let c = countSetor[s]; let pInterna = (c.qtdMovInterna / c.tot) * 100; let pExterna = (c.qtdMovExterna / c.tot) * 100; let pEtiq = (c.qtdSemEtiq / c.tot) * 100;
-                    if (c.qtdNaoLocal > 0) { if (c.maxValNaoLocal > 5000) { c.tier = 4; c.tierName = 'Vermelha'; c.colorClass = 'tier-vermelha'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ff3366'; unitsVermelha++; } else { c.tier = 3; c.tierName = 'Laranja'; c.colorClass = 'tier-laranja'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-orange').trim() || '#ff9900'; unitsLaranja++; } } else { if (pInterna <= 5 && pExterna <= 1 && pEtiq < 1) { c.tier = 1; c.tierName = 'Verde'; c.colorClass = 'tier-verde'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#00ffaa'; unitsVerde++; } else { c.tier = 2; c.tierName = 'Amarela'; c.colorClass = 'tier-amarela'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-alert').trim() || '#ffd600'; unitsAmarela++; } }
+                    if (c.qtdNaoLocal > 0) { if (c.maxValNaoLocal > 5000) { c.tier = 4; c.tierName = 'Vermelha'; c.colorClass = 'tier-vermelha'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ef4444'; unitsVermelha++; } else { c.tier = 3; c.tierName = 'Laranja'; c.colorClass = 'tier-laranja'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-orange').trim() || '#f59e0b'; unitsLaranja++; } } else { if (pInterna <= 5 && pExterna <= 1 && pEtiq < 1) { c.tier = 1; c.tierName = 'Verde'; c.colorClass = 'tier-verde'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#10b981'; unitsVerde++; } else { c.tier = 2; c.tierName = 'Amarela'; c.colorClass = 'tier-amarela'; c.hex = getComputedStyle(document.documentElement).getPropertyValue('--neon-alert').trim() || '#fbbf24'; unitsAmarela++; } }
                 }
 
                 const rankingUnidades = Object.entries(countSetor).sort((a, b) => { let cA = a[1]; let cB = b[1]; if (cA.tier !== cB.tier) return cB.tier - cA.tier; if (cA.qtdMovExterna !== cB.qtdMovExterna) return cB.qtdMovExterna - cA.qtdMovExterna; if (cA.qtdMovInterna !== cB.qtdMovInterna) return cB.qtdMovInterna - cA.qtdMovInterna; return cB.qtdSemEtiq - cA.qtdSemEtiq; });
@@ -919,13 +919,13 @@
                 document.getElementById('doughnutCenterValue').innerText = rankingUnidades.length;
 
                 const badgeMaior = document.getElementById('badgeMaiorImpacto');
-                if(rankingUnidades.length > 0 && rankingUnidades[0][1].tier > 1) { badgeMaior.innerText = `★ Unidade Mais Crítica: ${rankingUnidades[0][0].substring(0,15)} (Risco${rankingUnidades[0][1].tierName})`; badgeMaior.style.display = 'block'; badgeMaior.style.color = rankingUnidades[0][1].hex; badgeMaior.style.borderColor = rankingUnidades[0][1].hex; badgeMaior.style.background = `rgba(${rankingUnidades[0][1].tier === 4 ? '255, 51, 102' : '255, 153, 0'}, 0.1)`; } else { badgeMaior.style.display = 'none'; }
+                if(rankingUnidades.length > 0 && rankingUnidades[0][1].tier > 1) { badgeMaior.innerText = `★ Unidade Mais Crítica: ${rankingUnidades[0][0].substring(0,15)} (Risco${rankingUnidades[0][1].tierName})`; badgeMaior.style.display = 'block'; badgeMaior.style.color = rankingUnidades[0][1].hex; badgeMaior.style.borderColor = rankingUnidades[0][1].hex; badgeMaior.style.background = `rgba(${rankingUnidades[0][1].tier === 4 ? '239, 68, 68' : '245, 158, 11'}, 0.1)`; } else { badgeMaior.style.display = 'none'; }
                 
                 renderizarGraficosSenac(unitsVerde, unitsAmarela, unitsLaranja, unitsVermelha, rankingUnidades); await renderizarMapaPrincipal(countSetor);
 
                 let itensParaFeed = [...todosOsItens].sort((a, b) => { if (a.statusPeso !== b.statusPeso) return a.statusPeso - b.statusPeso; return (b.valorSort || 0) - (a.valorSort || 0); }).slice(0, 6);
                 const tituloPainelFeed = document.getElementById('updatesContainer').previousElementSibling;
-                if (globalQtdRisco > 0) { tituloPainelFeed.innerHTML = '🔥 Feed de Prioridade <span style="font-size: 0.65rem; color: var(--neon-error); float: right; margin-top: 2px;">ORDENADO POR RISCO/VALOR</span>'; tituloPainelFeed.style.color = 'var(--neon-error)'; tituloPainelFeed.style.borderBottom = '1px solid rgba(255, 51, 102, 0.2)'; tituloPainelFeed.style.paddingBottom = '8px'; } else { tituloPainelFeed.innerHTML = 'Feed de Auditoria <span style="font-size: 0.65rem; color: var(--neon-ok); float: right; margin-top: 2px;">PARQUE ESTÁVEL</span>'; tituloPainelFeed.style.color = 'var(--text-muted)'; tituloPainelFeed.style.borderBottom = 'none'; tituloPainelFeed.style.paddingBottom = '10px'; }
+                if (globalQtdRisco > 0) { tituloPainelFeed.innerHTML = '🔥 Feed de Prioridade <span style="font-size: 0.65rem; color: var(--neon-error); float: right; margin-top: 2px;">ORDENADO POR RISCO/VALOR</span>'; tituloPainelFeed.style.color = 'var(--neon-error)'; tituloPainelFeed.style.borderBottom = '1px solid rgba(239, 68, 68, 0.2)'; tituloPainelFeed.style.paddingBottom = '8px'; } else { tituloPainelFeed.innerHTML = 'Feed de Auditoria <span style="font-size: 0.65rem; color: var(--neon-ok); float: right; margin-top: 2px;">PARQUE ESTÁVEL</span>'; tituloPainelFeed.style.color = 'var(--text-muted)'; tituloPainelFeed.style.borderBottom = 'none'; tituloPainelFeed.style.paddingBottom = '10px'; }
                 document.getElementById('updatesContainer').innerHTML = itensParaFeed.map(u => { let badgeValor = u.valorSort >= 1000 ? `<span class="high-value-badge-feed">★ R$ ${(u.valorSort/1000).toFixed(1)}k</span>` : ''; return `<div class="update-row" onclick="abrirVisaoDetalhadaManual('FOCO DE ATENÇÃO: ${u.codigo}', 'TODOS', null, 'id', '${u.codigo}', true)" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px;"><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1;"><strong style="color:var(--text-main);">${u.codigo}</strong> <span style="font-size:0.85rem; color: var(--text-muted);">— ${u.desc.substring(0, 18)}</span>${badgeValor}</span><span class="badge-status status-${u.statusClass}" style="flex-shrink: 0; text-align: center; max-width: 110px;" title="${u.statusReal}">${u.statusReal}</span></div>` }).join('');
             } catch (err) {}
         }
@@ -950,10 +950,10 @@
         function renderizarGraficosSenac(qtdVerde, qtdAmarela, qtdLaranja, qtdVermelha, rankingUnidades) {
             try {
                 if (typeof Chart === 'undefined') return;
-                const hexOk = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#00ffaa';
-                const hexAlert = getComputedStyle(document.documentElement).getPropertyValue('--neon-alert').trim() || '#ffd600';
-                const hexOrange = getComputedStyle(document.documentElement).getPropertyValue('--neon-orange').trim() || '#ff9900';
-                const hexError = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ff3366';
+                const hexOk = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#10b981';
+                const hexAlert = getComputedStyle(document.documentElement).getPropertyValue('--neon-alert').trim() || '#fbbf24';
+                const hexOrange = getComputedStyle(document.documentElement).getPropertyValue('--neon-orange').trim() || '#f59e0b';
+                const hexError = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ef4444';
 
                 const ctxStatus = document.getElementById('chartStatus').getContext('2d'); if(chartStatusInst) chartStatusInst.destroy();
                 chartStatusInst = new Chart(ctxStatus, { type: 'doughnut', data: { labels: ['Verde', 'Amarela', 'Laranja', 'Vermelha'], datasets: [{ data: [qtdVerde, qtdAmarela, qtdLaranja, qtdVermelha], backgroundColor: [hexOk, hexAlert, hexOrange, hexError], borderWidth: 0, hoverOffset: 5, cutout: '85%' }] }, options: { responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false } }, layout: { padding: 10 } }, plugins: [{ id: 'shadowDoughnut', beforeDraw: chart => { const ctx = chart.ctx; chart.data.datasets.forEach((dataset, i) => { chart.getDatasetMeta(i).data.forEach((arc) => { ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 10; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 5; }); }); }, afterDraw: chart => { chart.ctx.shadowBlur = 0; } }] });
@@ -1017,11 +1017,11 @@
 
             setTimeout(() => {
                 if (typeof Chart === 'undefined') return;
-                const hexOk = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#00ffaa';
-                const hexError = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ff3366';
+                const hexOk = getComputedStyle(document.documentElement).getPropertyValue('--neon-ok').trim() || '#10b981';
+                const hexError = getComputedStyle(document.documentElement).getPropertyValue('--neon-error').trim() || '#ef4444';
 
                 const ctxFin = document.getElementById('chartFinanceiro').getContext('2d'); if(chartFinanceiroInst) chartFinanceiroInst.destroy(); Chart.defaults.elements.arc.borderWidth = 0;
-                chartFinanceiroInst = new Chart(ctxFin, { type: 'doughnut', data: { labels: ['Conformidade', 'Capital em Risco'], datasets: [{ data: [valOk, valRisco], backgroundColor: [hexOk, hexError], hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '85%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ' R$ ' + context.raw.toLocaleString('pt-BR'); }}} }, layout: { padding: 15 }, onClick: (event, elements) => { if (elements.length > 0) { const st = ['ok', ['alerta', 'erro']][elements[0].index]; const tit = ['CAPITAL EM CONFORMIDADE', 'CAPITAL EM RISCO'][elements[0].index]; abrirVisaoDetalhadaManual(tit, st, null, null, null, true); } } }, plugins: [{ id: 'glowPlugin', beforeDraw: chart => { const ctx = chart.ctx; chart.data.datasets.forEach((dataset, i) => { chart.getDatasetMeta(i).data.forEach((arc, index) => { if(index === 1) { ctx.shadowColor = 'rgba(255, 51, 102, 0.6)'; ctx.shadowBlur = 20; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; } else { ctx.shadowBlur = 0; } }); }); }, afterDraw: chart => { chart.ctx.shadowBlur = 0; } }] });
+                chartFinanceiroInst = new Chart(ctxFin, { type: 'doughnut', data: { labels: ['Conformidade', 'Capital em Risco'], datasets: [{ data: [valOk, valRisco], backgroundColor: [hexOk, hexError], hoverOffset: 8 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '85%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ' R$ ' + context.raw.toLocaleString('pt-BR'); }}} }, layout: { padding: 15 }, onClick: (event, elements) => { if (elements.length > 0) { const st = ['ok', ['alerta', 'erro']][elements[0].index]; const tit = ['CAPITAL EM CONFORMIDADE', 'CAPITAL EM RISCO'][elements[0].index]; abrirVisaoDetalhadaManual(tit, st, null, null, null, true); } } }, plugins: [{ id: 'glowPlugin', beforeDraw: chart => { const ctx = chart.ctx; chart.data.datasets.forEach((dataset, i) => { chart.getDatasetMeta(i).data.forEach((arc, index) => { if(index === 1) { ctx.shadowColor = 'rgba(239, 68, 68, 0.6)'; ctx.shadowBlur = 20; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; } else { ctx.shadowBlur = 0; } }); }); }, afterDraw: chart => { chart.ctx.shadowBlur = 0; } }] });
                 
                 const rankingResp = Object.entries(respStats).sort((a,b) => b[1].total - a[1].total).slice(0, 10);
                 document.getElementById('rankingResponsaveisContainer').innerHTML = rankingResp.map((r, idx) => { let totalPessoa = r[1].total; let percOk = (r[1].ok / totalPessoa) * 100; let percRisco = (r[1].risco / totalPessoa) * 100; if(r[1].risco > 0 && percRisco < 3) { percRisco = 3; percOk = 97; } let rankClass = idx === 0 ? 'top-1' : (idx === 1 ? 'top-2' : (idx === 2 ? 'top-3' : '')); let fnCall = `abrirVisaoDetalhadaManual('INVENTÁRIO: ${r[0].toUpperCase()}', 'TODOS', null, 'resp', '${r[0]}', false)`; return `<div class="sleek-bar-row" onclick="${fnCall}"><div class="sleek-rank ${rankClass}">#${idx+1}</div><div class="sleek-name">${r[0]}</div><div class="sleek-bar-track"><div class="sleek-bar-fill-ok" style="width: ${percOk}%;"></div><div class="sleek-bar-fill-risco" style="width: ${percRisco}%;"></div></div><div class="sleek-metrics"><strong>${r[1].qtd}</strong> itn &nbsp;\vert{}&nbsp; <strong>${formatarMoedaAbreviada(totalPessoa)}</strong></div></div>`; }).join('');
