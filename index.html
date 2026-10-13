@@ -115,7 +115,7 @@
         .highest-impact-badge { background: rgba(255, 51, 102, 0.1); color: var(--neon-error); border: 1px solid rgba(255, 51, 102, 0.4); padding: 5px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 15px rgba(255, 51, 102, 0.2); display: none; }
 
         #mapContainer { padding: 0; }
-        #mapTitle { position: absolute; top: 15px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.7); padding: 5px 12px; border-radius: 5px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); transition: color 0.3s;}
+        #mapTitle { position: absolute; top: 15px; left: 20px; z-index: 1000; background: var(--panel-bg); padding: 5px 12px; border-radius: 5px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); border: var(--panel-border); transition: color 0.3s;}
         #mapaBase { height: 100%; width: 100%; border-radius: 12px; z-index: 1;}
         
         .map-marker-html { border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; color: #000; border: 2px solid rgba(255,255,255,0.8); cursor: pointer; transition: transform 0.2s; }
@@ -128,15 +128,19 @@
         
         @keyframes radarPulseError { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); } 70% { box-shadow: 0 0 0 12px rgba(255, 51, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); } }
         
-        .city-label-map { background-color: transparent !important; border: none !important; box-shadow: none !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; font-size: 0.75rem !important; font-weight: 800 !important; text-shadow: 0 2px 4px rgba(0,0,0,1), 0 0 2px rgba(0,0,0,1) !important; text-transform: uppercase !important; letter-spacing: 1px !important; pointer-events: none !important; margin-top: -2px !important; }
+        /* ADAPTAÇÃO DAS CORES DO MAPA E POPUPS PARA OBEDECER AO TEMA */
+        .city-label-map { background-color: transparent !important; border: none !important; box-shadow: none !important; color: var(--text-main) !important; font-family: 'Inter', sans-serif !important; font-size: 0.75rem !important; font-weight: 800 !important; text-shadow: 0 2px 4px var(--bg-color), 0 0 2px var(--bg-color) !important; text-transform: uppercase !important; letter-spacing: 1px !important; pointer-events: none !important; margin-top: -2px !important; }
         .leaflet-tooltip.city-label-map::before { display: none !important; }
         .leaflet-interactive { cursor: pointer !important; }
-        .leaflet-popup-content-wrapper { background: #18181b !important; color: #f8fafc !important; border: 1px solid #3f3f46; border-radius: 10px !important; box-shadow: 0 15px 30px rgba(0,0,0,0.9) !important; width: 280px; }
-        .leaflet-popup-tip { background: #18181b !important; border-bottom: 1px solid #3f3f46; border-right: 1px solid #3f3f46; }
-        .leaflet-popup-close-button { color: #a1a1aa !important; } .leaflet-popup-close-button:hover { color: #ffffff !important; }
+        
+        .leaflet-popup-content-wrapper { background: var(--bg-color) !important; color: var(--text-main) !important; border: var(--panel-border); border-radius: 10px !important; box-shadow: 0 15px 30px rgba(0,0,0,0.5) !important; width: 280px; }
+        .leaflet-popup-tip { background: var(--bg-color) !important; border-bottom: 1px solid var(--neon-blue); border-right: 1px solid var(--neon-blue); }
+        .leaflet-popup-close-button { color: var(--text-muted) !important; } .leaflet-popup-close-button:hover { color: var(--text-main) !important; }
         .custom-popup-content { font-family: 'Inter', sans-serif; padding: 5px; }
+        .custom-popup-content .popup-title { text-transform:uppercase; font-weight:800; margin-bottom:8px; border-bottom:1px solid rgba(161, 161, 170, 0.3); padding-bottom:5px; font-size:0.9rem; color: var(--text-main); }
+        
         .btn-inventario-popup { margin-top: 15px; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--neon-blue); color: var(--neon-blue); padding: 10px 15px; border-radius: 6px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; transition: all 0.2s; display: inline-block; width: 100%; text-align: center;}
-        .btn-inventario-popup:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
+        .btn-inventario-popup:hover { background: var(--neon-blue); color: var(--bg-color); box-shadow: 0 0 15px rgba(0, 210, 255, 0.5); }
 
         .progress-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0px;}
         .progress-header { flex-grow: 1; }
@@ -149,8 +153,8 @@
         
         .badge-status { padding: 4px 10px; border-radius: 4px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #000; display: inline-block; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;}
         
-        .status-ok { background-color: var(--neon-ok); box-shadow: 0 0 8px rgba(0, 255, 170, 0.3); }
-        .status-alerta { background-color: var(--neon-alert); box-shadow: 0 0 8px rgba(255, 214, 0, 0.3); }
+        .status-ok { background-color: var(--neon-ok); box-shadow: 0 0 8px rgba(0, 255, 170, 0.3); color: var(--bg-color); }
+        .status-alerta { background-color: var(--neon-alert); box-shadow: 0 0 8px rgba(255, 214, 0, 0.3); color: var(--bg-color); }
         .status-erro { background-color: var(--neon-error); color: white; box-shadow: 0 0 8px rgba(255, 51, 102, 0.3); }
         
         @keyframes pulseVencido { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.8); } 70% { box-shadow: 0 0 0 10px rgba(255, 51, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); } }
@@ -168,7 +172,7 @@
         .controles-detalhe { display: flex; align-items: center; gap: 20px; }
         .detalhes-timer-badge { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; }
         .btn-voltar { background: transparent; color: var(--neon-blue); border: 1px solid var(--neon-blue); padding: 8px 25px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s;}
-        .btn-voltar:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);}
+        .btn-voltar:hover { background: var(--neon-blue); color: var(--bg-color); box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);}
 
         .filtros-bar { display: flex; gap: 12px; background: rgba(255,255,255,0.02); padding: 15px 20px; border-radius: 12px; border: var(--panel-border); margin-bottom: 20px; align-items: center; flex-wrap: wrap;}
         .filtros-bar select, .filtros-bar input { background: var(--bg-color); color: var(--text-main); border: 1px solid #3f3f46; padding: 12px; border-radius: 8px; font-size: 0.85rem; outline: none; transition: border 0.3s; font-family: 'Inter', sans-serif;}
@@ -220,7 +224,7 @@
         .share-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 15px;}
         .share-card-info h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 5px; font-weight: 800;}
         .share-card-info p { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4;}
-        .btn-copy-link { background: var(--neon-blue); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; transition: all 0.3s; white-space: nowrap;}
+        .btn-copy-link { background: var(--neon-blue); color: var(--bg-color); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; transition: all 0.3s; white-space: nowrap;}
         .btn-copy-link:hover { box-shadow: 0 0 15px rgba(0, 210, 255, 0.6); }
         .share-checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: background 0.2s; padding: 10px; border-radius: 6px; border: 1px solid transparent; }
         .share-checkbox-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
@@ -228,7 +232,6 @@
         .share-checkbox-row label { cursor: pointer; color: var(--text-main); font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; flex-grow: 1; margin: 0; }
         #shareCheckboxesContainer::-webkit-scrollbar { width: 6px; } #shareCheckboxesContainer::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
 
-        /* ESTILOS DA PERSONALIZAÇÃO DE TEMAS */
         .theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
         .theme-card { background: rgba(255,255,255,0.03); border: 2px solid transparent; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.2s; display: flex; flex-direction: column; gap: 8px; }
         .theme-card:hover { border-color: var(--neon-blue); transform: translateY(-2px); }
@@ -486,7 +489,7 @@
         <div id="telaMapaFoco" class="tela-overlay">
             <div class="timer-bar-container"><div class="timer-bar-fill timer-foco"></div></div>
             <div class="detalhes-header"><h2 class="detalhes-titulo" id="focoTitulo">MAPA DE COBERTURA GEOGRÁFICA</h2><div class="controles-detalhe"><span class="detalhes-timer-badge badge-timer-overlay" style="display: none;">Auto-retorno em 15s</span><button class="btn-voltar" onclick="fecharTodasTelasOverlay()">Voltar</button></div></div>
-            <div class="detalhes-body" style="padding: 0; border: 1px solid #3f3f46; border-radius: 12px; overflow: hidden; position: relative; background: #000;"><div id="mapaFocoBase" style="width: 100%; height: 100%;"></div></div>
+            <div class="detalhes-body" style="padding: 0; border: 1px solid #3f3f46; border-radius: 12px; overflow: hidden; position: relative; background: var(--bg-color);"><div id="mapaFocoBase" style="width: 100%; height: 100%;"></div></div>
         </div>
 
         <div id="telaEstatisticas" class="tela-overlay">
@@ -533,6 +536,8 @@
 
     <script>
         // CONFIGURAÇÕES E TEMAS VISUAIS
+        let currentMapTileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+
         const PALETAS_TEMAS = {
             dark: {
                 '--bg-color': '#09090b',
@@ -608,6 +613,21 @@
             document.querySelectorAll('.theme-card').forEach(card => card.classList.remove('active'));
             const cardAtivo = document.getElementById(`cardTheme_${nomeTema}`);
             if (cardAtivo) cardAtivo.classList.add('active');
+
+            if (nomeTema === 'light') {
+                currentMapTileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+            } else {
+                currentMapTileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+            }
+
+            if (mapaInstancia) {
+                mapaInstancia.eachLayer(layer => { if (layer instanceof L.TileLayer) mapaInstancia.removeLayer(layer); });
+                L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaInstancia);
+            }
+            if (mapaFocoInstancia) {
+                mapaFocoInstancia.eachLayer(layer => { if (layer instanceof L.TileLayer) mapaFocoInstancia.removeLayer(layer); });
+                L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaFocoInstancia);
+            }
 
             try { localStorage.setItem('senac_tema_ativo_v1', nomeTema); } catch(e){}
             
@@ -915,13 +935,13 @@
                 if (typeof L === 'undefined') return;
                 if (mapaInstancia) { mapaInstancia.remove(); }
                 mapaInstancia = L.map('mapaBase', {zoomControl: false, attributionControl: false, doubleClickZoom: false}).setView([-13.0, -56.0], 5);
-                L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 12 }).addTo(mapaInstancia);
+                L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaInstancia);
                 let cidadesMapeadas = {}; const chaves = Object.keys(countSetor);
                 for (let i = 0; i < chaves.length; i++) { let c = countSetor[chaves[i]]; let geoResult = geocodeLocal(c.originalNome); let coords = geoResult.coords; let cityName = geoResult.name; let coordKey = coords.join(','); if (!cidadesMapeadas[coordKey]) cidadesMapeadas[coordKey] = { tot: 0, coords: coords, nomes: new Set(), cityName: cityName, maxTier: c.tier, maxTierName: c.tierName, colorClass: c.colorClass, hex: c.hex, qtdMovExterna: 0, qtdMovInterna: 0, qtdSemEtiq: 0 }; let cid = cidadesMapeadas[coordKey]; cid.tot += c.tot; cid.nomes.add(c.originalNome); cid.qtdMovExterna += c.qtdMovExterna; cid.qtdMovInterna += c.qtdMovInterna; cid.qtdSemEtiq += c.qtdSemEtiq; if (c.tier > cid.maxTier) { cid.maxTier = c.tier; cid.maxTierName = c.tierName; cid.colorClass = c.colorClass; cid.hex = c.hex; } }
                 let bounds = [];
                 for (let cid in cidadesMapeadas) {
                     let data = cidadesMapeadas[cid]; let customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class="map-marker-html ${data.colorClass}" style="width: 24px; height: 24px;">${data.tot}</div>`, iconSize: [24, 24], iconAnchor: [12, 12] }); let marker = L.marker(data.coords, { icon: customIcon }).addTo(mapaInstancia); L.tooltip({ permanent: true, direction: "top", className: "city-label-map", offset: [0, -12] }).setLatLng(data.coords).setContent(data.cityName).addTo(mapaInstancia);
-                    let nomesArr = Array.from(data.nomes); let popupContainer = document.createElement('div'); popupContainer.className = 'custom-popup-content'; popupContainer.innerHTML = `<div style="text-transform:uppercase; font-weight:bold; margin-bottom:8px; border-bottom:1px solid #3f3f46; padding-bottom:5px; font-size:0.9rem; color: #fff;">${data.cityName}</div><div style="font-size: 0.85rem; margin-bottom: 8px; color: #a1a1aa; display: flex; justify-content: space-between;">Status Senac: <strong style="color:${data.hex}; text-transform:uppercase;">${data.maxTierName}</strong></div><div style="font-size: 0.7rem; color: #a1a1aa; text-align: left; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 4px; margin-bottom: 12px;">${data.qtdMovExterna} Incons. Mov. Externa<br>${data.qtdMovInterna} Incons. Mov. Interna<br>${data.qtdSemEtiq} Sem Etiqueta</div><div class="btn-inventario-popup">📁 Abrir Inventário</div>`; popupContainer.querySelector('.btn-inventario-popup').addEventListener('click', () => { abrirVisaoDetalhadaManual(`INVENTÁRIO LOCAL: ${data.cityName}`, nomesArr); mapaInstancia.closePopup(); }); marker.bindPopup(popupContainer); marker.on('dblclick', function(e) { this.openPopup(); }); bounds.push(data.coords);
+                    let nomesArr = Array.from(data.nomes); let popupContainer = document.createElement('div'); popupContainer.className = 'custom-popup-content'; popupContainer.innerHTML = `<div class="popup-title">${data.cityName}</div><div style="font-size: 0.85rem; margin-bottom: 8px; color: var(--text-muted); display: flex; justify-content: space-between;">Status Senac: <strong style="color:${data.hex}; text-transform:uppercase;">${data.maxTierName}</strong></div><div style="font-size: 0.7rem; color: var(--text-muted); text-align: left; background: rgba(0,0,0,0.1); border: 1px solid rgba(161, 161, 170, 0.2); padding: 5px; border-radius: 4px; margin-bottom: 12px;">${data.qtdMovExterna} Incons. Mov. Externa<br>${data.qtdMovInterna} Incons. Mov. Interna<br>${data.qtdSemEtiq} Sem Etiqueta</div><div class="btn-inventario-popup">📁 Abrir Inventário</div>`; popupContainer.querySelector('.btn-inventario-popup').addEventListener('click', () => { abrirVisaoDetalhadaManual(`INVENTÁRIO LOCAL: ${data.cityName}`, nomesArr); mapaInstancia.closePopup(); }); marker.bindPopup(popupContainer); marker.on('dblclick', function(e) { this.openPopup(); }); bounds.push(data.coords);
                 }
                 if(bounds.length > 0) { mapaInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 8}); } setTimeout(() => { if (mapaInstancia) mapaInstancia.invalidateSize(); }, 350);
             } catch(e) {}
@@ -954,12 +974,12 @@
             document.getElementById('telaMapaFoco').classList.add('ativa'); let isOk = (statusFoco === 'ok'); let corClasse = isOk ? 'tier-verde' : 'tier-vermelha'; let corTexto = isOk ? 'var(--neon-ok)' : 'var(--neon-error)'; let tituloFoco = isOk ? 'MAPA DE COBERTURA: CONFORMIDADE' : 'ALERTA GEOGRÁFICO: ITENS EM RISCO'; let subtitulo = isOk ? 'EM CONFORMIDADE' : 'EM RISCO';
             document.querySelector('#telaMapaFoco .detalhes-header').style.borderLeftColor = corTexto; document.getElementById('focoTitulo').innerText = tituloFoco; document.getElementById('focoTitulo').style.color = corTexto;
             if (typeof L === 'undefined') return;
-            if (!mapaFocoInstancia) { mapaFocoInstancia = L.map('mapaFocoBase', {zoomControl: false, attributionControl: false}).setView([-13.0, -56.0], 6); L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 12 }).addTo(mapaFocoInstancia); }
+            if (!mapaFocoInstancia) { mapaFocoInstancia = L.map('mapaFocoBase', {zoomControl: false, attributionControl: false}).setView([-13.0, -56.0], 6); L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaFocoInstancia); }
             setTimeout(async () => {
                 mapaFocoInstancia.invalidateSize(); mapaFocoInstancia.eachLayer(layer => { if(layer instanceof L.CircleMarker || layer instanceof L.Tooltip || layer instanceof L.Marker) mapaFocoInstancia.removeLayer(layer); });
                 let itensFiltrados = todosOsItens.filter(i => isOk ? i.statusClass === 'ok' : (i.statusClass === 'alerta' || i.statusClass === 'erro')); let countSetor = {}; itensFiltrados.forEach(i => { if(!countSetor[i.setor]) countSetor[i.setor] = {qtd: 0, originalNome: i.originalNome}; countSetor[i.setor].qtd++; });
                 let focusGroups = {}; const chaves = Object.keys(countSetor); for (let i = 0; i < chaves.length; i++) { let setorData = countSetor[chaves[i]]; let geoResult = geocodeLocal(setorData.originalNome); let coordKey = geoResult.coords.join(','); if (!focusGroups[coordKey]) focusGroups[coordKey] = { qtd: 0, coords: geoResult.coords, cityName: geoResult.name }; focusGroups[coordKey].qtd += setorData.qtd; }
-                let bounds = []; for (let key in focusGroups) { let fg = focusGroups[key]; let customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class="map-marker-html ${corClasse}" style="width: 28px; height: 28px; font-size: 0.85rem;">${fg.qtd}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] }); let marker = L.marker(fg.coords, { icon: customIcon }).addTo(mapaFocoInstancia); marker.bindTooltip(`<div style="text-transform:uppercase; font-weight:bold; color: #fff;">${fg.cityName}</div><span style="color:${corTexto}; font-size: 0.9rem; font-weight: 600;">${subtitulo}</span>`, {permanent: false, direction: "top", opacity: 0.9}); L.tooltip({ permanent: true, direction: "top", className: "city-label-map", offset: [0, -15] }).setLatLng(fg.coords).setContent(fg.cityName).addTo(mapaFocoInstancia); bounds.push(fg.coords); }
+                let bounds = []; for (let key in focusGroups) { let fg = focusGroups[key]; let customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class="map-marker-html ${corClasse}" style="width: 28px; height: 28px; font-size: 0.85rem;">${fg.qtd}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] }); let marker = L.marker(fg.coords, { icon: customIcon }).addTo(mapaFocoInstancia); marker.bindTooltip(`<div style="text-transform:uppercase; font-weight:bold; color: var(--text-main);">${fg.cityName}</div><span style="color:${corTexto}; font-size: 0.9rem; font-weight: 600;">${subtitulo}</span>`, {permanent: false, direction: "top", opacity: 0.9}); L.tooltip({ permanent: true, direction: "top", className: "city-label-map", offset: [0, -15] }).setLatLng(fg.coords).setContent(fg.cityName).addTo(mapaFocoInstancia); bounds.push(fg.coords); }
                 if(bounds.length > 0) { mapaFocoInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 8}); }
             }, 300);
         }
