@@ -25,10 +25,10 @@
             --neon-orange: #ff9900; 
             --neon-error: #ff3366; 
             --neon-blue: #00d2ff;
-            /* Variáveis Dinâmicas do Mapa */
-            --map-blend-mode: screen;
-            --map-opacity: 0.7;
-            --map-filter: grayscale(100%) contrast(1.5) brightness(0.8);
+            /* Variáveis do Mapa Otimizadas para Claridade */
+            --map-blend-mode: normal;
+            --map-opacity: 1;
+            --map-filter: grayscale(80%) contrast(1.2) brightness(1.2);
         }
         body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; user-select: none; transition: background-color 0.3s, color 0.3s;}
 
@@ -222,12 +222,12 @@
         .btn-ver-validados:hover { background: var(--neon-error); color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);}
         
         /* MAGIA DO MAPA: Adapta-se ao fundo automaticamente */
-        .leaflet-container { background: transparent !important; }
+        .leaflet-container { background: var(--bg-color) !important; }
         .leaflet-control-attribution { display: none; }
         .leaflet-tile-pane { 
-            opacity: var(--map-opacity, 0.7); 
-            mix-blend-mode: var(--map-blend-mode, screen); 
-            filter: var(--map-filter, grayscale(100%) contrast(1.5) brightness(0.8)); 
+            opacity: var(--map-opacity, 1); 
+            mix-blend-mode: var(--map-blend-mode, normal); 
+            filter: var(--map-filter, grayscale(80%) contrast(1.2) brightness(1.2)); 
             transition: all 0.5s ease;
         }
 
@@ -560,9 +560,9 @@
                 '--neon-orange': '#ff9900',
                 '--neon-error': '#ff3366',
                 '--neon-blue': '#00d2ff',
-                '--map-blend-mode': 'screen',
-                '--map-opacity': '0.7',
-                '--map-filter': 'grayscale(100%) contrast(1.5) brightness(0.8)'
+                '--map-blend-mode': 'normal',
+                '--map-opacity': '1',
+                '--map-filter': 'grayscale(80%) contrast(1.2) brightness(0.6)'
             },
             senac: {
                 '--bg-color': '#001a33',
@@ -575,9 +575,9 @@
                 '--neon-orange': '#f59e0b',
                 '--neon-error': '#ef4444',
                 '--neon-blue': '#f37021',
-                '--map-blend-mode': 'screen',
-                '--map-opacity': '0.85',
-                '--map-filter': 'grayscale(100%) contrast(1.5) brightness(0.8)'
+                '--map-blend-mode': 'normal',
+                '--map-opacity': '1',
+                '--map-filter': 'grayscale(80%) contrast(1.2) brightness(0.6)'
             },
             emerald: {
                 '--bg-color': '#06120e',
@@ -590,9 +590,9 @@
                 '--neon-orange': '#f97316',
                 '--neon-error': '#f43f5e',
                 '--neon-blue': '#06b6d4',
-                '--map-blend-mode': 'screen',
-                '--map-opacity': '0.7',
-                '--map-filter': 'grayscale(100%) contrast(1.5) brightness(0.8)'
+                '--map-blend-mode': 'normal',
+                '--map-opacity': '1',
+                '--map-filter': 'grayscale(80%) contrast(1.2) brightness(0.6)'
             },
             purple: {
                 '--bg-color': '#0f0a1c',
@@ -605,9 +605,9 @@
                 '--neon-orange': '#f97316',
                 '--neon-error': '#ec4899',
                 '--neon-blue': '#a855f7',
-                '--map-blend-mode': 'screen',
-                '--map-opacity': '0.7',
-                '--map-filter': 'grayscale(100%) contrast(1.5) brightness(0.8)'
+                '--map-blend-mode': 'normal',
+                '--map-opacity': '1',
+                '--map-filter': 'grayscale(80%) contrast(1.2) brightness(0.6)'
             },
             light: {
                 '--bg-color': '#f1f5f9',
@@ -620,9 +620,9 @@
                 '--neon-orange': '#ea580c',
                 '--neon-error': '#e11d48',
                 '--neon-blue': '#0284c7',
-                '--map-blend-mode': 'multiply',
-                '--map-opacity': '0.65',
-                '--map-filter': 'grayscale(100%) contrast(1.2) brightness(1.1)'
+                '--map-blend-mode': 'normal',
+                '--map-opacity': '1',
+                '--map-filter': 'grayscale(50%) contrast(1.1) brightness(1)'
             }
         };
 
@@ -959,7 +959,8 @@
             try {
                 if (typeof L === 'undefined') return;
                 if (mapaInstancia) { mapaInstancia.remove(); }
-                mapaInstancia = L.map('mapaBase', {zoomControl: false, attributionControl: false, doubleClickZoom: false}).setView([-13.0, -56.0], 5);
+                // Foco Inicial sempre em Mato Grosso
+                mapaInstancia = L.map('mapaBase', {zoomControl: false, attributionControl: false, doubleClickZoom: false}).setView([-13.0, -56.0], 6);
                 L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaInstancia);
                 let cidadesMapeadas = {}; const chaves = Object.keys(countSetor);
                 for (let i = 0; i < chaves.length; i++) { let c = countSetor[chaves[i]]; let geoResult = geocodeLocal(c.originalNome); let coords = geoResult.coords; let cityName = geoResult.name; let coordKey = coords.join(','); if (!cidadesMapeadas[coordKey]) cidadesMapeadas[coordKey] = { tot: 0, coords: coords, nomes: new Set(), cityName: cityName, maxTier: c.tier, maxTierName: c.tierName, colorClass: c.colorClass, hex: c.hex, qtdMovExterna: 0, qtdMovInterna: 0, qtdSemEtiq: 0 }; let cid = cidadesMapeadas[coordKey]; cid.tot += c.tot; cid.nomes.add(c.originalNome); cid.qtdMovExterna += c.qtdMovExterna; cid.qtdMovInterna += c.qtdMovInterna; cid.qtdSemEtiq += c.qtdSemEtiq; if (c.tier > cid.maxTier) { cid.maxTier = c.tier; cid.maxTierName = c.tierName; cid.colorClass = c.colorClass; cid.hex = c.hex; } }
@@ -968,7 +969,10 @@
                     let data = cidadesMapeadas[cid]; let customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class="map-marker-html ${data.colorClass}" style="width: 24px; height: 24px;">${data.tot}</div>`, iconSize: [24, 24], iconAnchor: [12, 12] }); let marker = L.marker(data.coords, { icon: customIcon }).addTo(mapaInstancia); L.tooltip({ permanent: true, direction: "top", className: "city-label-map", offset: [0, -12] }).setLatLng(data.coords).setContent(data.cityName).addTo(mapaInstancia);
                     let nomesArr = Array.from(data.nomes); let popupContainer = document.createElement('div'); popupContainer.className = 'custom-popup-content'; popupContainer.innerHTML = `<div class="popup-title">${data.cityName}</div><div style="font-size: 0.85rem; margin-bottom: 8px; color: var(--text-muted); display: flex; justify-content: space-between;">Status Senac: <strong style="color:${data.hex}; text-transform:uppercase;">${data.maxTierName}</strong></div><div style="font-size: 0.7rem; color: var(--text-muted); text-align: left; background: rgba(0,0,0,0.1); border: 1px solid rgba(161, 161, 170, 0.2); padding: 5px; border-radius: 4px; margin-bottom: 12px;">${data.qtdMovExterna} Incons. Mov. Externa<br>${data.qtdMovInterna} Incons. Mov. Interna<br>${data.qtdSemEtiq} Sem Etiqueta</div><div class="btn-inventario-popup">📁 Abrir Inventário</div>`; popupContainer.querySelector('.btn-inventario-popup').addEventListener('click', () => { abrirVisaoDetalhadaManual(`INVENTÁRIO LOCAL: ${data.cityName}`, nomesArr); mapaInstancia.closePopup(); }); marker.bindPopup(popupContainer); marker.on('dblclick', function(e) { this.openPopup(); }); bounds.push(data.coords);
                 }
-                if(bounds.length > 0) { mapaInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 8}); } setTimeout(() => { if (mapaInstancia) mapaInstancia.invalidateSize(); }, 350);
+                
+                // MUDANÇA PRINCIPAL PARA O ZOOM: Ajuste do padding e maxZoom (7) para não abrir para a América do Sul
+                if(bounds.length > 0) { mapaInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 7, animate: true}); } 
+                setTimeout(() => { if (mapaInstancia) mapaInstancia.invalidateSize(); }, 350);
             } catch(e) {}
         }
 
@@ -1005,7 +1009,7 @@
                 let itensFiltrados = todosOsItens.filter(i => isOk ? i.statusClass === 'ok' : (i.statusClass === 'alerta' || i.statusClass === 'erro')); let countSetor = {}; itensFiltrados.forEach(i => { if(!countSetor[i.setor]) countSetor[i.setor] = {qtd: 0, originalNome: i.originalNome}; countSetor[i.setor].qtd++; });
                 let focusGroups = {}; const chaves = Object.keys(countSetor); for (let i = 0; i < chaves.length; i++) { let setorData = countSetor[chaves[i]]; let geoResult = geocodeLocal(setorData.originalNome); let coordKey = geoResult.coords.join(','); if (!focusGroups[coordKey]) focusGroups[coordKey] = { qtd: 0, coords: geoResult.coords, cityName: geoResult.name }; focusGroups[coordKey].qtd += setorData.qtd; }
                 let bounds = []; for (let key in focusGroups) { let fg = focusGroups[key]; let customIcon = L.divIcon({ className: 'custom-div-icon', html: `<div class="map-marker-html ${corClasse}" style="width: 28px; height: 28px; font-size: 0.85rem;">${fg.qtd}</div>`, iconSize: [28, 28], iconAnchor: [14, 14] }); let marker = L.marker(fg.coords, { icon: customIcon }).addTo(mapaFocoInstancia); marker.bindTooltip(`<div style="text-transform:uppercase; font-weight:bold; color: var(--text-main);">${fg.cityName}</div><span style="color:${corTexto}; font-size: 0.9rem; font-weight: 600;">${subtitulo}</span>`, {permanent: false, direction: "top", opacity: 0.9}); L.tooltip({ permanent: true, direction: "top", className: "city-label-map", offset: [0, -15] }).setLatLng(fg.coords).setContent(fg.cityName).addTo(mapaFocoInstancia); bounds.push(fg.coords); }
-                if(bounds.length > 0) { mapaFocoInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 8}); }
+                if(bounds.length > 0) { mapaFocoInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 7}); }
             }, 300);
         }
 
