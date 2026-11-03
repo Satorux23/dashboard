@@ -72,6 +72,7 @@
         .modo-auto { background: rgba(0, 255, 170, 0.1); color: var(--neon-ok); border-color: rgba(0, 255, 170, 0.3); }
         .modo-interativo { background: rgba(255, 214, 0, 0.1); color: var(--neon-alert); border-color: rgba(255, 214, 0, 0.3); }
         .modo-espera { background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border-color: rgba(0, 210, 255, 0.3); }
+        
         .btn-novo-arquivo { background-color: rgba(255, 51, 102, 0.1); color: var(--neon-error); border: 1px solid var(--neon-error); padding: 6px 14px; border-radius: 20px; font-weight: 800; cursor: pointer; transition: all 0.2s; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px;}
         .btn-novo-arquivo:hover { background-color: var(--neon-error); color: white; box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);}
         .clock-box { font-size: 1.2rem; font-weight: 300; color: var(--text-muted); letter-spacing: 2px; margin-right: 10px;}
@@ -300,6 +301,24 @@
         </div>
     </div>
 
+    <!-- MODAL DE EXCLUSÃO DE PAINEIS -->
+    <div id="modalExcluirOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
+        <div class="setup-box" style="max-width: 500px; padding: 30px; border-left: 4px solid var(--neon-error);">
+            <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">🗑️ Gerenciar Painéis</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Selecione os painéis que deseja remover, ou exclua todos de uma vez.</p>
+            
+            <div id="deleteCheckboxesContainer" style="background: rgba(0,0,0,0.3); border: 1px solid #27272a; border-radius: 8px; padding: 10px; max-height: 220px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px;">
+                <!-- Preenchido via JavaScript -->
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn-novo-arquivo" style="width: 100%; text-align: center; padding: 12px; margin: 0;" onclick="excluirPaineisSelecionados()">Excluir Selecionados</button>
+                <button class="btn-voltar" style="width: 100%; padding: 12px; color: var(--neon-error); border-color: var(--neon-error);" onclick="voltarAoSetupLimpo()">Excluir Todos (Reset Completo)</button>
+                <button class="btn-voltar" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="document.getElementById('modalExcluirOverlay').classList.remove('ativa');">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL DE PERSONALIZAÇÃO DE TEMAS -->
     <div id="modalThemeOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
         <div class="setup-box" style="max-width: 600px; padding: 30px; border-top: 4px solid var(--neon-alert);">
@@ -410,7 +429,7 @@
                 <span class="modo-badge modo-auto" id="badgeModo" onclick="event.stopPropagation(); iniciarLoopInfinito()" style="cursor: pointer;" title="Forçar modo automático agora">Auto Loop</span>
                 <button class="btn-personalizar" onclick="abrirModalPersonalizar()">🎨 Personalização</button>
                 <button class="btn-compartilhar" onclick="abrirModalCompartilhar()">📤 Compartilhar</button>
-                <button class="btn-novo-arquivo" onclick="voltarAoSetupLimpo()">🔄 Resetar Sistema</button>
+                <button class="btn-novo-arquivo" onclick="abrirModalExclusao()" title="Gerenciar painéis: exclua painéis específicos ou limpe todo o sistema de uma vez">🗑️ Lixeira</button>
             </div>
             <div class="clock-box" id="clock">--:--</div>
         </div>
@@ -1073,7 +1092,7 @@
             document.getElementById('kpiDetalhesQtd').innerText = filtrados.length; document.getElementById('kpiDetalhesValor').innerText = formatarMoeda(somaValorFiltro);
             if (maxDiasAtraso > 0) { document.getElementById('kpiDetalhesAtraso').innerText = `${maxDiasAtraso} dias`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value risco'; } else if (maxDiasAtraso === 0) { document.getElementById('kpiDetalhesAtraso').innerText = `Vence Hoje`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value risco'; } else { document.getElementById('kpiDetalhesAtraso').innerText = `No Prazo`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value ok'; }
             let colTemplate = `1.2fr 3fr 1.5fr`; if (usaResp) colTemplate += ` 1.5fr`; if (usaData) colTemplate += ` 1fr`; if (usaValor) colTemplate += ` 1.2fr`; colTemplate += ` 1.5fr`; 
-            let theadHTML = `<div class="card-list-header" style="grid-template-columns: ${colTemplate};"><div>Identificador</div><div>Descrição</div><div>Localidade</div>`; if (usaResp) theadHTML += `<div>Responsável</div>`; if (usaData) theadHTML += `<div>Data / Prazo</div>`; if (usaValor) fluidHTML = true; if (usaValor) theadHTML += `<div>Valor</div>`; theadHTML += `<div>Status</div></div>`; document.getElementById('tabelaCabecalho').innerHTML = theadHTML;
+            let theadHTML = `<div class="card-list-header" style="grid-template-columns: ${colTemplate};"><div>Identificador</div><div>Descrição</div><div>Localidade</div>`; if (usaResp) theadHTML += `<div>Responsável</div>`; if (usaData) fluidHTML = true; if (usaData) theadHTML += `<div>Data / Prazo</div>`; if (usaValor) theadHTML += `<div>Valor</div>`; theadHTML += `<div>Status</div></div>`; document.getElementById('tabelaCabecalho').innerHTML = theadHTML;
             const tbody = document.getElementById('tabelaCorpo');
             if (filtrados.length === 0) { tbody.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted); font-size: 1.2rem;">Nenhum registro encontrado.</div>`; } else { tbody.innerHTML = filtrados.map(i => { 
                 let highValueBadge = (i.valorSort >= 100000) ? `<span class="high-value-badge-feed" style="font-size:0.65rem;">★ ALTO IMPACTO</span>` : ``; let badgeClassAdicional = ""; 
@@ -1141,6 +1160,44 @@
                     alert("✅ Link copiado com sucesso!");
                 });
             }
+        }
+
+        // --- FUNÇÕES DA NOVA LIXEIRA ---
+        function abrirModalExclusao() {
+            const container = document.getElementById('deleteCheckboxesContainer');
+            if (datasetsGlobais.length === 0) {
+                container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 15px;">Nenhum dashboard carregado.</div>`;
+            } else {
+                container.innerHTML = datasetsGlobais.map((ds, i) => `
+                    <div class="share-checkbox-row" onclick="const cb = document.getElementById('chkDel_${i}'); if(event.target.tagName !== 'INPUT') cb.checked = !cb.checked;">
+                        <input type="checkbox" id="chkDel_${i}" value="${i}">
+                        <label for="chkDel_${i}">📁 ${ds.nome}</label>
+                    </div>`).join('');
+            }
+            document.getElementById('modalExcluirOverlay').classList.add('ativa');
+        }
+
+        async function excluirPaineisSelecionados() {
+            const checkboxes = document.querySelectorAll('#deleteCheckboxesContainer input[type="checkbox"]:checked');
+            if (checkboxes.length === 0) {
+                alert("Selecione pelo menos um painel para excluir.");
+                return;
+            }
+            if (checkboxes.length === datasetsGlobais.length) {
+                voltarAoSetupLimpo();
+                return;
+            }
+            
+            // Pega os índices marcados de trás para frente para não bagunçar a ordem ao deletar
+            const indexesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a, b) => b - a);
+            indexesToDelete.forEach(idx => { datasetsGlobais.splice(idx, 1); });
+            
+            try { localStorage.setItem('vis_backup_dados_v17', JSON.stringify(datasetsGlobais)); } catch(e) {}
+            
+            document.getElementById('modalExcluirOverlay').classList.remove('ativa');
+            
+            // Reinicia o dashboard no primeiro painel disponível
+            await inicializarAmbienteDataset(0);
         }
 
         let bloqueiaInteracao = false;
