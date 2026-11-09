@@ -168,6 +168,8 @@
 
         .tela-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: var(--bg-color); z-index: 1000; padding: 30px; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .tela-overlay.ativa { opacity: 1; pointer-events: auto; }
+        .tela-overlay.config-modal { z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95); }
+        
         .timer-bar-container { position: absolute; top: 0; left: 0; width: 100%; height: 4px; background-color: transparent; }
         .timer-bar-fill { height: 100%; background: var(--neon-blue); width: 0%; box-shadow: 0 0 10px var(--neon-blue); }
         
@@ -212,7 +214,7 @@
         .sleek-metrics { width: 180px; font-size: 0.8rem; color: var(--text-muted); text-align: right; white-space: nowrap; }
 
         .progress-bar-loop { position: fixed; bottom: 0; left: 0; height: 3px; background-color: var(--neon-ok); width: 0%; z-index: 2000; box-shadow: 0 -2px 10px rgba(0, 255, 170, 0.5);}
-        .toast-alerta { position: fixed; top: 30px; right: 30px; background: var(--bg-color); border: 1px solid #3f3f46; border-left: 4px solid var(--neon-error); padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); color: var(--text-main); z-index: 3000; max-width: 450px; width: 100%; opacity: 0; visibility: hidden; transform: translateY(-20px); transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease; backdrop-filter: blur(10px); }
+        .toast-alerta { position: fixed; top: 30px; right: 30px; background: var(--bg-color); border: 1px solid #3f3f46; border-left: 4px solid var(--neon-error); padding: 25px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); color: var(--text-main); z-index: 6500; max-width: 450px; width: 100%; opacity: 0; visibility: hidden; transform: translateY(-20px); transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s ease; backdrop-filter: blur(10px); }
         .toast-alerta.mostrar { opacity: 1; visibility: visible; transform: translateY(0); } 
         .toast-header-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px; }
         .toast-titulo { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: var(--neon-error); letter-spacing: 1px; }
@@ -222,7 +224,6 @@
         .btn-ver-validados { background: transparent; color: var(--neon-error); border: 1px solid var(--neon-error); padding: 10px 15px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;}
         .btn-ver-validados:hover { background: var(--neon-error); color: #fff; box-shadow: 0 0 15px rgba(255, 51, 102, 0.4);}
         
-        /* MAGIA DO MAPA: Adapta-se ao fundo automaticamente */
         .leaflet-container { background: var(--bg-color) !important; }
         .leaflet-control-attribution { display: none; }
         .leaflet-tile-pane { 
@@ -287,7 +288,7 @@
     </div>
 
     <!-- MODAL CUSTOMIZADO PARA TAG DE ALTERAÇÃO -->
-    <div id="modalTagOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
+    <div id="modalTagOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 500px; padding: 30px; border-left: 4px solid var(--neon-blue);">
             <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 10px; font-weight: 800;">Caracterizar Atualização</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; line-height: 1.4;">
@@ -302,7 +303,7 @@
     </div>
 
     <!-- MODAL DE EXCLUSÃO DE PAINEIS -->
-    <div id="modalExcluirOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
+    <div id="modalExcluirOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 500px; padding: 30px; border-left: 4px solid var(--neon-error);">
             <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">🗑️ Gerenciar Painéis</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Selecione os painéis que deseja remover, ou exclua todos de uma vez.</p>
@@ -314,13 +315,13 @@
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn-novo-arquivo" style="width: 100%; text-align: center; padding: 12px; margin: 0;" onclick="excluirPaineisSelecionados()">Excluir Selecionados</button>
                 <button class="btn-voltar" style="width: 100%; padding: 12px; color: var(--neon-error); border-color: var(--neon-error);" onclick="voltarAoSetupLimpo()">Excluir Todos (Reset Completo)</button>
-                <button class="btn-voltar" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="document.getElementById('modalExcluirOverlay').classList.remove('ativa');">Cancelar</button>
+                <button class="btn-voltar" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="fecharModalConfig('modalExcluirOverlay')">Cancelar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE PERSONALIZAÇÃO DE TEMAS -->
-    <div id="modalThemeOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
+    <div id="modalThemeOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 600px; padding: 30px; border-top: 4px solid var(--neon-alert);">
             <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">🎨 Personalizar Paleta Visual</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Escolha o estilo de cores desejado para o painel. A alteração é instantânea e fica salva para seus próximos acessos.</p>
@@ -378,13 +379,13 @@
             </div>
 
             <div style="display: flex; justify-content: center; margin-top: 25px;">
-                <button class="btn-voltar" style="padding: 10px 35px;" onclick="document.getElementById('modalThemeOverlay').classList.remove('ativa');">Concluir</button>
+                <button class="btn-voltar" style="padding: 10px 35px;" onclick="fecharModalConfig('modalThemeOverlay')">Concluir</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE COMPARTILHAMENTO DE LINKS -->
-    <div id="modalShareOverlay" class="tela-overlay" style="z-index: 6000; justify-content: center; align-items: center; background-color: rgba(9, 9, 11, 0.95);">
+    <div id="modalShareOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 650px; padding: 30px; border-top: 4px solid var(--neon-blue);">
             <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">Compartilhar Dashboard</h3>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Selecione o formato de link que deseja gerar. Os dados serão empacotados diretamente na URL de forma segura.</p>
@@ -414,9 +415,16 @@
             </div>
 
             <div style="display: flex; justify-content: center; margin-top: 25px;">
-                <button class="btn-voltar" style="padding: 10px 30px;" onclick="document.getElementById('modalShareOverlay').classList.remove('ativa');">Fechar</button>
+                <button class="btn-voltar" style="padding: 10px 30px;" onclick="fecharModalConfig('modalShareOverlay')">Fechar</button>
             </div>
         </div>
+    </div>
+
+    <!-- NOTIFICAÇÃO FLUTUANTE CUSTOMIZADA -->
+    <div class="toast-alerta" id="toastAlerta">
+        <div class="toast-header-box"><div class="toast-titulo">Aviso</div><button class="btn-fechar-toast" onclick="document.getElementById('toastAlerta').classList.remove('mostrar')">×</button></div>
+        <div class="toast-texto" id="toastTexto">Apurando dados...</div>
+        <button class="btn-ver-validados" onclick="abrirVisaoValidadosPeloToast()" style="display:none;">Verificar Detalhes</button>
     </div>
 
     <div id="appContainer">
@@ -554,12 +562,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="toast-alerta" id="toastAlerta">
-            <div class="toast-header-box"><div class="toast-titulo">System Warning</div><button class="btn-fechar-toast" onclick="ignorarAlertas()">×</button></div>
-            <div class="toast-texto" id="toastTexto">Apurando dados...</div>
-            <button class="btn-ver-validados" onclick="abrirVisaoValidadosPeloToast()">Verificar Detalhes</button>
-        </div>
         <div class="progress-bar-loop" id="loopProgressBar"></div>
     </div>
 
@@ -645,6 +647,26 @@
             }
         };
 
+        // --- SISTEMA DE NOTIFICAÇÕES (Substitui os alerts nativos) ---
+        function mostrarNotificacao(titulo, mensagem, tipo = 'aviso') {
+            const toast = document.getElementById('toastAlerta');
+            const tit = document.querySelector('.toast-titulo');
+            const txt = document.getElementById('toastTexto');
+            const btnDetalhes = document.querySelector('.btn-ver-validados');
+            
+            tit.innerText = titulo;
+            txt.innerHTML = mensagem;
+            
+            toast.style.borderLeftColor = tipo === 'ok' ? 'var(--neon-ok)' : (tipo === 'erro' ? 'var(--neon-error)' : 'var(--neon-alert)');
+            tit.style.color = tipo === 'ok' ? 'var(--neon-ok)' : (tipo === 'erro' ? 'var(--neon-error)' : 'var(--neon-alert)');
+            btnDetalhes.style.display = tipo === 'sistema' ? 'block' : 'none';
+            
+            toast.classList.add('mostrar');
+            if (tipo !== 'sistema') {
+                setTimeout(() => { toast.classList.remove('mostrar'); }, 4500);
+            }
+        }
+
         function selecionarTema(nomeTema) {
             const paleta = PALETAS_TEMAS[nomeTema];
             if (!paleta) return;
@@ -686,6 +708,7 @@
         }
 
         function abrirModalPersonalizar() {
+            pausarLoopInfinito(); // Evitar fechamento automático
             document.getElementById('modalThemeOverlay').classList.add('ativa');
         }
 
@@ -757,7 +780,6 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const encodedDataV3 = urlParams.get('v3');
                 
-                // --- MODO LINK CURTO (V3) - Reconstrutor Clone ---
                 if (encodedDataV3 && typeof LZString !== 'undefined') {
                     try {
                         const decodedStr = LZString.decompressFromEncodedURIComponent(encodedDataV3);
@@ -796,7 +818,7 @@
                         window.history.replaceState({}, document.title, window.location.pathname);
                         await inicializarAmbienteDataset(0);
                         return;
-                    } catch(e) { alert("O link compartilhado é inválido."); }
+                    } catch(e) { mostrarNotificacao("Link Inválido", "O link compartilhado é inválido ou está corrompido.", "erro"); }
                 }
 
                 const configSalva = localStorage.getItem('vis_map_config_v17');
@@ -805,6 +827,7 @@
                 if (dadosSalvos) { datasetsGlobais = JSON.parse(dadosSalvos); if (datasetsGlobais && datasetsGlobais.length > 0 && datasetsGlobais[0].itens) { await inicializarAmbienteDataset(0); return; } }
             } catch(e) { localStorage.clear(); }
             
+            pausarLoopInfinito(); // Evitar fechamento automático
             document.getElementById('telaSetup').style.display = 'flex'; 
         };
 
@@ -828,8 +851,26 @@
             });
         }
 
+        // --- REGRA DE NEGÓCIO ATUALIZADA (DUPLICIDADE E ETIQUETA) ---
         function classificarStatusSenac(statusRaw) {
-            let s = String(statusRaw).toLowerCase(); let isNaoLocal = s.includes('não') || s.includes('nao') || s.includes('perdido') || s.includes('falta') || s.includes('sumiu'); let isSemEtiq = s.includes('etiqueta') || s.includes('plaqueta') || s.includes('danificad'); let isMovInterna = s.includes('interna') || s.includes('setor'); let isMovExterna = s.includes('entre') || s.includes('externa') || s.includes('transferência') || s.includes('transferencia') || s.includes('outra') || s.includes('unidade'); if (s.includes('movimenta') && !isMovInterna && !isMovExterna) isMovExterna = true; let baseClass = 'ok'; if (isNaoLocal) baseClass = 'erro'; else if (isSemEtiq || isMovExterna || isMovInterna || s.includes('manutenção') || s.includes('pendente') || s.includes('reserva') || s.includes('atenção')) baseClass = 'alerta'; else if (s.includes('baixado') || s.includes('irregular') || s.includes('ruim') || s.includes('quebrado')) baseClass = 'erro'; return { class: baseClass, text: statusRaw, tags: { naoLocalizado: isNaoLocal, movInterna: isMovInterna, movExterna: isMovExterna, semEtiq: isSemEtiq } };
+            let s = String(statusRaw).toLowerCase(); 
+            let isNaoLocal = s.includes('não') || s.includes('nao') || s.includes('perdido') || s.includes('falta') || s.includes('sumiu'); 
+            let isSemEtiq = s.includes('sem etiqueta') || s.includes('plaqueta') || s.includes('danificad'); 
+            let isEtiquetaOk = s.includes('etiqueta') && !s.includes('sem'); // REGRA: etiqueta em conformidade
+            let isMovInterna = s.includes('interna') || s.includes('setor'); 
+            let isMovExterna = s.includes('entre') || s.includes('externa') || s.includes('transferência') || s.includes('transferencia') || s.includes('outra') || s.includes('unidade'); 
+            let isDuplicidade = s.includes('duplicidade') || s.includes('duplicado'); // REGRA: duplicidade inconformidade
+            
+            if (s.includes('movimenta') && !isMovInterna && !isMovExterna) isMovExterna = true; 
+            
+            let baseClass = 'ok'; 
+            if (isNaoLocal || isDuplicidade) baseClass = 'erro'; 
+            else if (isSemEtiq || isMovExterna || isMovInterna || s.includes('manutenção') || s.includes('pendente') || s.includes('reserva') || s.includes('atenção')) baseClass = 'alerta'; 
+            else if (s.includes('baixado') || s.includes('irregular') || s.includes('ruim') || s.includes('quebrado')) baseClass = 'erro'; 
+            
+            if (isEtiquetaOk && baseClass !== 'erro') baseClass = 'ok'; 
+            
+            return { class: baseClass, text: statusRaw, tags: { naoLocalizado: isNaoLocal, movInterna: isMovInterna, movExterna: isMovExterna, semEtiq: isSemEtiq, duplicidade: isDuplicidade } };
         }
 
         async function processarArquivoEGerarPainel(isAdicao = false) {
@@ -865,6 +906,7 @@
 
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = false; tagVersaoPendente = "";
+            pausarLoopInfinito(); // Evitar fechamento automático
             document.querySelector('.setup-title').innerText = "System Setup"; document.getElementById('btnGerar').innerText = "Inicializar Dashboard";
             arquivosPendentes = Array.from(e.target.files); document.querySelector('.upload-area p').innerText = `⏳ Analisando...`;
             await processarArquivoEGerarPainel(false);
@@ -872,12 +914,18 @@
 
         document.getElementById('addFileInput').addEventListener('change', async function(e) {
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = true; tagVersaoPendente = ""; arquivosPendentes = Array.from(e.target.files);
+            pausarLoopInfinito(); // Evitar fechamento automático
             document.querySelector('.setup-title').innerText = "Adicionar Novo Dataset"; document.getElementById('btnGerar').innerText = "Adicionar ao Dashboard";
             document.querySelector('.upload-area p').innerText = `⏳ Analisando...`; document.getElementById('telaSetup').style.display = 'flex'; document.getElementById('telaSetup').style.opacity = '1';
             await processarArquivoEGerarPainel(true); document.getElementById('addFileInput').value = ""; 
         });
 
-        function iniciarGeracaoPainel() { document.getElementById('inputTagPersonalizada').value = ''; document.getElementById('modalTagOverlay').classList.add('ativa'); setTimeout(() => document.getElementById('inputTagPersonalizada').focus(), 100); }
+        function iniciarGeracaoPainel() { 
+            pausarLoopInfinito(); // Força a parada do cronômetro de 10 segundos
+            document.getElementById('inputTagPersonalizada').value = ''; 
+            document.getElementById('modalTagOverlay').classList.add('ativa'); 
+            setTimeout(() => document.getElementById('inputTagPersonalizada').focus(), 100); 
+        }
 
         async function confirmarTagPersonalizada(comTag) { document.getElementById('modalTagOverlay').classList.remove('ativa'); tagVersaoPendente = comTag ? document.getElementById('inputTagPersonalizada').value.trim() : ""; document.querySelector('.upload-area p').innerText = `⏳ Gerando Painel...`; setTimeout(async () => { await gerarPainel(); }, 50); }
 
@@ -1109,6 +1157,7 @@
 
         let allShareChecked = true;
         function abrirModalCompartilhar() {
+            pausarLoopInfinito(); // Evitar fechamento automático
             const container = document.getElementById('shareCheckboxesContainer');
             if (datasetsGlobais.length === 0) { container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 15px;">Nenhum dashboard carregado no momento.</div>`; } else { container.innerHTML = datasetsGlobais.map((ds, i) => `<div class="share-checkbox-row" onclick="const cb = document.getElementById('chkShare_${i}'); if(event.target.tagName !== 'INPUT') cb.checked = !cb.checked; atualizarTextoBtnToggleShare();"><input type="checkbox" id="chkShare_${i}" value="${i}" checked><label for="chkShare_${i}">📁 ${ds.nome}</label></div>`).join(''); }
             allShareChecked = true; atualizarTextoBtnToggleShare(); document.getElementById('modalShareOverlay').classList.add('ativa');
@@ -1119,16 +1168,25 @@
 
         function gerarLink(modo) {
             let baseUrl = window.location.origin + window.location.pathname;
-            if (baseUrl.startsWith("file://")) { alert("⚠️ AVISO DE COMPARTILHAMENTO LOCAL\n\nVocê está rodando o sistema direto do seu Disco C:. O link gerado SÓ VAI FUNCIONAR NO SEU COMPUTADOR."); return; }
+            if (baseUrl.startsWith("file://")) { 
+                mostrarNotificacao("Aviso de Compartilhamento Local", "Você está rodando o sistema direto do seu Disco C:. O link gerado SÓ VAI FUNCIONAR NO SEU COMPUTADOR.", "erro"); 
+                return; 
+            }
 
             if (modo === 'limpo') {
-                navigator.clipboard.writeText(baseUrl).then(() => { let btn = document.getElementById('btnCopyLimpo'); let oldText = btn.innerText; btn.innerText = "Copiado! ✓"; btn.style.background = "var(--neon-ok)"; btn.style.color = "#000"; setTimeout(() => { btn.innerText = oldText; btn.style.background = "var(--neon-blue)"; btn.style.color = "#000"; }, 2500); });
+                navigator.clipboard.writeText(baseUrl).then(() => { 
+                    let btn = document.getElementById('btnCopyLimpo'); let oldText = btn.innerText; btn.innerText = "Copiado! ✓"; btn.style.background = "var(--neon-ok)"; btn.style.color = "#000"; 
+                    setTimeout(() => { btn.innerText = oldText; btn.style.background = "var(--neon-blue)"; btn.style.color = "#000"; }, 2500); 
+                    mostrarNotificacao("Sucesso", "Link copiado para a área de transferência!", "ok");
+                });
             } else if (modo === 'selecionados') {
                 const checkboxes = document.querySelectorAll('#shareCheckboxesContainer input[type="checkbox"]:checked');
-                if (checkboxes.length === 0) { alert("⚠️ Selecione pelo menos um dashboard."); return; }
+                if (checkboxes.length === 0) { 
+                    mostrarNotificacao("Atenção", "Selecione pelo menos um dashboard para compartilhar.", "aviso"); 
+                    return; 
+                }
                 let datasetsBrutos = Array.from(checkboxes).map(cb => datasetsGlobais[parseInt(cb.value)]);
                 
-                // MODO V3: AGRUPAMENTO MATEMÁTICO (O Link fica Minúsculo)
                 let dataToShare = datasetsBrutos.map(ds => {
                     let agg = {};
                     ds.itens.forEach(it => {
@@ -1157,13 +1215,22 @@
                         btn.style.color = "#000"; 
                     }, 2500);
                     
-                    alert("✅ Link copiado com sucesso!");
+                    mostrarNotificacao("Link Executivo Copiado", "A URL compilada foi enviada para a sua área de transferência com sucesso!", "ok");
                 });
             }
         }
 
-        // --- FUNÇÕES DA NOVA LIXEIRA ---
+        function fecharModalConfig(modalId) {
+            document.getElementById(modalId).classList.remove('ativa');
+            // Só religa o modo de espera se já havia um dashboard aberto
+            if (document.getElementById('appContainer').style.display !== 'none' && !bloqueiaInteracao) {
+                executarRetornoAoLoop(TEMPO_RETORNO_B);
+            }
+        }
+
+        // --- FUNÇÕES DA LIXEIRA ---
         function abrirModalExclusao() {
+            pausarLoopInfinito(); // Evitar fechamento automático
             const container = document.getElementById('deleteCheckboxesContainer');
             if (datasetsGlobais.length === 0) {
                 container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 15px;">Nenhum dashboard carregado.</div>`;
@@ -1180,7 +1247,7 @@
         async function excluirPaineisSelecionados() {
             const checkboxes = document.querySelectorAll('#deleteCheckboxesContainer input[type="checkbox"]:checked');
             if (checkboxes.length === 0) {
-                alert("Selecione pelo menos um painel para excluir.");
+                mostrarNotificacao("Atenção", "Selecione pelo menos um painel para excluir.", "aviso");
                 return;
             }
             if (checkboxes.length === datasetsGlobais.length) {
@@ -1194,23 +1261,67 @@
             
             try { localStorage.setItem('vis_backup_dados_v17', JSON.stringify(datasetsGlobais)); } catch(e) {}
             
-            document.getElementById('modalExcluirOverlay').classList.remove('ativa');
+            fecharModalConfig('modalExcluirOverlay');
+            mostrarNotificacao("Sucesso", "Os painéis selecionados foram excluídos.", "ok");
             
             // Reinicia o dashboard no primeiro painel disponível
             await inicializarAmbienteDataset(0);
         }
 
         let bloqueiaInteracao = false;
-        function fecharTodasTelasOverlay() { document.querySelectorAll('.tela-overlay').forEach(el => el.classList.remove('ativa')); clearInterval(contadorVisualTelas); }
+        
+        // MODIFICADO: Ignora as telas de configuração
+        function fecharTodasTelasOverlay() { 
+            document.querySelectorAll('.tela-overlay:not(.config-modal)').forEach(el => el.classList.remove('ativa')); 
+            clearInterval(contadorVisualTelas); 
+        }
+
+        function pausarLoopInfinito() {
+            bloqueiaInteracao = true;
+            modoAutonomo = false;
+            clearTimeout(timerLoopAuto);
+            clearTimeout(timerEspera3s);
+            clearTimeout(timerRetorno_Telas);
+            clearTimeout(timerRetorno_Loop);
+            clearInterval(contadorVisualTelas);
+            document.getElementById('loopProgressBar').style.width = '0%';
+            document.querySelectorAll('.timer-bar-fill').forEach(tBar => { tBar.style.transition = 'none'; tBar.style.width = '0%'; });
+            document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.style.display = 'none');
+            atualizarBadgeModo('modo-interativo', 'Modo Manual');
+        }
+
         function animarTimerBar(msTempo) { let seg = msTempo / 1000; document.querySelectorAll('.badge-timer-overlay').forEach(tb => { tb.style.display = 'block'; tb.innerText = `Auto-retorno em ${seg}s`; }); document.querySelectorAll('.timer-bar-fill').forEach(tBar => { tBar.style.transition = 'none'; tBar.style.width = '100%'; }); setTimeout(() => { document.querySelectorAll('.timer-bar-fill').forEach(tBar => { tBar.style.transition = `width ${msTempo}ms linear`; tBar.style.width = '0%'; }); }, 50); clearInterval(contadorVisualTelas); contadorVisualTelas = setInterval(() => { seg--; if(seg >= 0) { document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.innerText = `Auto-retorno em ${seg}s`); } }, 1000); }
         function iniciarLoopInfinito() { bloqueiaInteracao = true; modoAutonomo = true; atualizarBadgeModo('modo-auto', 'Auto Loop'); clearTimeout(timerLoopAuto); fecharTodasTelasOverlay(); document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.style.display = 'none'); proximoQuadroLoop(); setTimeout(() => { bloqueiaInteracao = false; }, 1000); }
         function proximoQuadroLoop() { if (!modoAutonomo) return; fecharTodasTelasOverlay(); const quadro = quadrosLoop[indiceQuadroAtual]; let tempoDesteQuadro = TEMPO_LOOP_AUTO; if (quadro.tipo === 'detalhes') { abrirVisaoDetalhadaManual(quadro.titulo, quadro.filtro); modoAutonomo = true; } else if (quadro.tipo === 'mapa_foco') { exibirVisaoMapaFoco(quadro.filtro); modoAutonomo = true; } else if (quadro.tipo === 'graficos') { exibirVisaoEstatisticas(); if (globalQtdRisco === 0) { tempoDesteQuadro = 5000; } modoAutonomo = true; } const loopBar = document.getElementById('loopProgressBar'); loopBar.style.transition = 'none'; loopBar.style.width = '0%'; setTimeout(() => { loopBar.style.transition = `width ${tempoDesteQuadro}ms linear`; loopBar.style.width = '100%'; }, 50); if(quadro.tipo === 'graficos' && globalQtdRisco === 0) { const innerBar = document.getElementById('timerEstatisticaFill'); if (innerBar) { innerBar.style.transition = 'none'; innerBar.style.width = '0%'; setTimeout(() => { innerBar.style.transition = `width ${tempoDesteQuadro}ms linear`; innerBar.style.width = '100%'; }, 50); } } indiceQuadroAtual = (indiceQuadroAtual + 1) % quadrosLoop.length; timerLoopAuto = setTimeout(proximoQuadroLoop, tempoDesteQuadro); }
-        function registrarInteracaoUsuario(e) { if(document.getElementById('telaSetup').style.display !== 'none') return; if(bloqueiaInteracao) return; modoAutonomo = false; clearTimeout(timerLoopAuto); clearInterval(contadorVisualTelas); document.getElementById('loopProgressBar').style.width = '0%'; document.querySelectorAll('.timer-bar-fill').forEach(tBar => { tBar.style.transition = 'none'; tBar.style.width = '0%'; }); document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.style.display = 'none'); atualizarBadgeModo('modo-interativo', 'Modo Manual'); clearTimeout(timerEspera3s); clearTimeout(timerRetorno_Telas); clearTimeout(timerRetorno_Loop); timerEspera3s = setTimeout(() => { const overlayAtivo = document.querySelector('.tela-overlay.ativa'); overlayAtivo ? executarRetornoTelas(TEMPO_RETORNO_A) : executarRetornoAoLoop(TEMPO_RETORNO_B); }, TEMPO_CARENCIA); }
+        
+        // MODIFICADO: Impede que o timer reinicie na tela de configuração
+        function registrarInteracaoUsuario(e) { 
+            if (document.querySelector('.tela-overlay.config-modal.ativa') || document.getElementById('telaSetup').style.display !== 'none') {
+                return;
+            }
+
+            if(bloqueiaInteracao) return; 
+            modoAutonomo = false; 
+            clearTimeout(timerLoopAuto); 
+            clearInterval(contadorVisualTelas); 
+            document.getElementById('loopProgressBar').style.width = '0%'; 
+            document.querySelectorAll('.timer-bar-fill').forEach(tBar => { tBar.style.transition = 'none'; tBar.style.width = '0%'; }); 
+            document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.style.display = 'none'); 
+            atualizarBadgeModo('modo-interativo', 'Modo Manual'); 
+            clearTimeout(timerEspera3s); 
+            clearTimeout(timerRetorno_Telas); 
+            clearTimeout(timerRetorno_Loop); 
+            
+            timerEspera3s = setTimeout(() => { 
+                const overlayAtivo = document.querySelector('.tela-overlay.ativa:not(.config-modal)'); 
+                overlayAtivo ? executarRetornoTelas(TEMPO_RETORNO_A) : executarRetornoAoLoop(TEMPO_RETORNO_B); 
+            }, TEMPO_CARENCIA); 
+        }
+
         function executarRetornoTelas(msTempo) { animarTimerBar(msTempo); timerRetorno_Telas = setTimeout(() => { fecharTodasTelasOverlay(); executarRetornoAoLoop(TEMPO_RETORNO_B); }, msTempo); }
         function executarRetornoAoLoop(msTempo) { atualizarBadgeModo('modo-espera', `Standby...`); timerRetorno_Loop = setTimeout(() => { iniciarLoopInfinito(); }, msTempo); }
         ['mousemove', 'mousedown', 'click', 'touchstart', 'keydown', 'wheel', 'scroll'].forEach(evt => window.addEventListener(evt, registrarInteracaoUsuario, { passive: true, capture: true }));
         function atualizarBadgeModo(classe, texto) { const b = document.getElementById('badgeModo'); b.className = `modo-badge ${classe}`; b.innerText = texto; }
-        function ignorarAlertas() { alertasIgnoradosPeloUsuario = true; document.getElementById('toastAlerta').classList.remove('mostrar'); }
         function abrirVisaoValidadosPeloToast() { document.getElementById('toastAlerta').classList.remove('mostrar'); abrirVisaoDetalhadaManual('AÇÃO REQUERIDA', ['alerta', 'erro']); }
     </script>
 </body>
