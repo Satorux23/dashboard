@@ -54,7 +54,7 @@
         .header-title-box { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .header-bar h1 { font-size: 1.6rem; letter-spacing: -1px; color: var(--text-main); font-weight: 800; margin-left: 10px; margin-right: 5px;}
         
-        .dataset-switcher { background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border: 1px solid rgba(0, 210, 255, 0.3); padding: 6px 15px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; font-family: 'Inter', sans-serif; max-width: 250px; text-overflow: ellipsis; transition: all 0.2s;}
+        .dataset-switcher { background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border: 1px solid rgba(0, 210, 255, 0.3); padding: 6px 15px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; outline: none; cursor: pointer; font-family: 'Inter', sans-serif; max-width: 280px; text-overflow: ellipsis; transition: all 0.2s;}
         .dataset-switcher:hover { background: rgba(0, 210, 255, 0.2); border-color: var(--neon-blue); box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);}
         .dataset-switcher option { background: var(--bg-color); color: var(--text-main); }
 
@@ -294,11 +294,20 @@
     <div id="modalEditarOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 700px; padding: 30px; border-top: 4px solid var(--neon-blue);">
             <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">✏️ Editar Dashboard</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Altere o nome e reconfigure os parâmetros de colunas do painel selecionado.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Altere o nome, substitua a planilha ou reconfigure os parâmetros de colunas do painel selecionado.</p>
             
-            <div class="map-group full" style="margin-bottom: 20px;">
+            <div class="map-group full" style="margin-bottom: 15px;">
                 <label style="display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Nome do Dashboard</label>
                 <input type="text" id="editNomeDashboard" placeholder="Digite o novo nome..." style="width: 100%; padding: 12px; border-radius: 8px; background-color: var(--bg-color); border: 1px solid #3f3f46; color: var(--text-main); font-size: 1rem; outline: none; transition: border 0.3s;">
+            </div>
+
+            <div class="map-group full" style="margin-bottom: 20px;">
+                <label style="display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Substituir Planilha / Dados (Opcional)</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button class="btn-adicionar" style="background: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border-color: var(--neon-blue); padding: 10px 15px; border-radius: 8px; font-size: 0.85rem;" onclick="document.getElementById('editFileInput').click()">🔄 Carregar Novo Excel</button>
+                    <span id="editFileStatus" style="font-size: 0.8rem; color: var(--text-muted); flex-grow: 1;">-</span>
+                </div>
+                <input type="file" id="editFileInput" accept=".xlsx, .xls, .csv" onchange="tratarSubstituicaoArquivoEdit(event)" style="display: none;">
             </div>
 
             <div class="map-grid" id="editMappingGrid">
@@ -780,7 +789,11 @@
         let chartStatusInst = null; let chartGruposInst = null; let chartFinanceiroInst = null; 
         let mapaInstancia = null; let mapaFocoInstancia = null; let arrayCidadesAtuais = null; let multiStatusAtuais = null;
 
-        // AJUSTADO TEMPO DO AUTO LOOP PARA 25 SEGUNDOS (25000ms)
+        // VARIAVEIS DE SUPORTE À EDIÇÃO DE DASHBOARD
+        let editArquivoPendente = null;
+        let editJsonMestreCache = null;
+        let editCabeçalhos = [];
+
         const TEMPO_LOOP_AUTO = 25000; const TEMPO_CARENCIA = 3000; const TEMPO_RETORNO_A = 15000; const TEMPO_RETORNO_B = 10000;
         
         const quadrosLoop = [ { tipo: 'dashboard' }, { tipo: 'mapa_foco', titulo: 'MAPA DE COBERTURA: CONFORMIDADE', filtro: 'ok' }, { tipo: 'graficos', titulo: 'ANÁLISE ESTATÍSTICA E FINANCEIRA' }, { tipo: 'detalhes', titulo: 'LISTA DE ITENS EM CONFORMIDADE', filtro: 'ok' } ];
@@ -1101,6 +1114,7 @@
             } catch (fatalError) { exibirErroSetup("🚨 Falha ao carregar dados. Verifique a estrutura da planilha."); }
         }
 
+        // --- SISTEMA DE EDIÇÃO COMPLETA DE DASHBOARD ---
         function abrirModalEditarDashboard() {
             if (datasetsGlobais.length === 0) {
                 mostrarNotificacao("Aviso", "Nenhum dashboard carregado para editar.", "aviso");
@@ -1111,17 +1125,29 @@
             let ds = datasetsGlobais[idx];
             if (!ds) return;
 
+            editArquivoPendente = null;
+            editJsonMestreCache = ds.rawData || null;
+            editCabeçalhos = ds.cabeçalhos || [];
+
             document.getElementById('editNomeDashboard').value = ds.nome || '';
-            
+            document.getElementById('editFileInput').value = '';
+            document.getElementById('editFileStatus').innerText = ds.rawData ? "Planilha original vinculada." : "Nenhuma planilha bruta vinculada. Carregue uma nova para remapear.";
+            document.getElementById('editFileStatus').style.color = "var(--text-muted)";
+
+            renderizarGridMapeamentoEdicao(ds.cabeçalhos, ds.config);
+            document.getElementById('modalEditarOverlay').classList.add('ativa');
+        }
+
+        function renderizarGridMapeamentoEdicao(headers, cfg) {
             let grid = document.getElementById('editMappingGrid');
-            if (ds.cabeçalhos && ds.cabeçalhos.length > 0) {
+            if (headers && headers.length > 0) {
                 grid.style.display = 'grid';
                 const selects = ['editMapCodigo', 'editMapDesc', 'editMapSetor', 'editMapStatus', 'editMapResp', 'editMapData', 'editMapValor'];
                 selects.forEach(selId => { 
-                    document.getElementById(selId).innerHTML = '<option value="">-- Ignorar --</option>' + ds.cabeçalhos.map((h, i) => `<option value="${i}">${h}</option>`).join(''); 
+                    document.getElementById(selId).innerHTML = '<option value="">-- Ignorar --</option>' + headers.map((h, i) => `<option value="${i}">${h}</option>`).join(''); 
                 });
 
-                let cfg = ds.config || {};
+                cfg = cfg || {};
                 document.getElementById('editMapCodigo').value = (cfg.idxCod !== undefined && cfg.idxCod !== -1) ? cfg.idxCod : '';
                 document.getElementById('editMapStatus').value = (cfg.idxStatus !== undefined && cfg.idxStatus !== -1) ? cfg.idxStatus : '';
                 document.getElementById('editMapDesc').value = (cfg.idxDesc !== undefined && cfg.idxDesc !== -1) ? cfg.idxDesc : '';
@@ -1135,8 +1161,39 @@
             } else {
                 grid.style.display = 'none';
             }
+        }
 
-            document.getElementById('modalEditarOverlay').classList.add('ativa');
+        async function tratarSubstituicaoArquivoEdit(e) {
+            if (!e.target.files || e.target.files.length === 0) return;
+            let file = e.target.files[0];
+            document.getElementById('editFileStatus').innerText = `⏳ Analisando ${file.name}...`;
+            try {
+                editJsonMestreCache = await extrairJsonDoArquivo(file);
+                let headerRowIdx = 0; let maxCols = 0;
+                for(let i=0; i<Math.min(100, editJsonMestreCache.length); i++) { 
+                    if (!Array.isArray(editJsonMestreCache[i])) continue; 
+                    const cols = editJsonMestreCache[i].filter(c => c !== null && c !== undefined && String(c).trim() !== '').length; 
+                    if (cols > maxCols) { maxCols = cols; headerRowIdx = i; } 
+                }
+                editCabeçalhos = editJsonMestreCache[headerRowIdx].map(h => String(h || '').trim());
+                
+                renderizarGridMapeamentoEdicao(editCabeçalhos, {});
+                
+                let colunasJaUsadas = [];
+                function mapearEdit(idSelect, chaveDicionario) {
+                    let arrPalavras = dicionarioDinamico[chaveDicionario];
+                    for (let i = 0; i < editCabeçalhos.length; i++) { if (colunasJaUsadas.includes(i)) continue; let txt = editCabeçalhos[i].toLowerCase().trim(); if (arrPalavras.includes(txt)) { document.getElementById(idSelect).value = i; colunasJaUsadas.push(i); if (idSelect === 'editMapData') verificarToggleDataEdit(String(i)); return; } }
+                    for (let i = 0; i < editCabeçalhos.length; i++) { if (colunasJaUsadas.includes(i)) continue; let txt = editCabeçalhos[i].toLowerCase().trim(); for (let p = 0; p < arrPalavras.length; p++) { let palavra = arrPalavras[p]; let regex = new RegExp(`\\b${palavra}\\b`, 'i'); if (regex.test(txt)) { document.getElementById(idSelect).value = i; colunasJaUsadas.push(i); if (idSelect === 'editMapData') verificarToggleDataEdit(String(i)); return; } } }
+                }
+
+                mapearEdit('editMapSetor', 'setor'); mapearEdit('editMapCodigo', 'cod'); mapearEdit('editMapDesc', 'desc'); mapearEdit('editMapStatus', 'status'); mapearEdit('editMapData', 'data'); mapearEdit('editMapValor', 'valor'); mapearEdit('editMapResp', 'resp'); 
+
+                document.getElementById('editFileStatus').innerText = `✓ Nova planilha lida: ${file.name}`;
+                document.getElementById('editFileStatus').style.color = "var(--neon-ok)";
+            } catch(err) {
+                document.getElementById('editFileStatus').innerText = `🚨 Erro ao ler planilha.`;
+                document.getElementById('editFileStatus').style.color = "var(--neon-error)";
+            }
         }
 
         async function salvarEdicaoDashboard() {
@@ -1147,7 +1204,7 @@
             let novoNome = document.getElementById('editNomeDashboard').value.trim();
             if (novoNome) ds.nome = novoNome;
 
-            if (ds.rawData && ds.cabeçalhos) {
+            if (editJsonMestreCache && editCabeçalhos && editCabeçalhos.length > 0) {
                 let valCod = document.getElementById('editMapCodigo').value;
                 let valStatus = document.getElementById('editMapStatus').value;
                 let idxCod = valCod !== "" ? parseInt(valCod) : -1;
@@ -1159,8 +1216,20 @@
                 let idxValor = document.getElementById('editMapValor').value !== "" ? parseInt(document.getElementById('editMapValor').value) : -1;
                 let isDataVencimento = document.getElementById('editMapDataBehavior').value === 'vencimento';
 
+                let headerRowIdx = 0; let maxCols = 0; 
+                for(let k=0; k<Math.min(100, editJsonMestreCache.length); k++) { 
+                    if (!Array.isArray(editJsonMestreCache[k])) continue; 
+                    const cols = editJsonMestreCache[k].filter(c => c !== null && c !== undefined && String(c).trim() !== '').length; 
+                    if (cols > maxCols) { maxCols = cols; headerRowIdx = k; } 
+                }
+                let dadosPuros = editJsonMestreCache.slice(headerRowIdx + 1);
+
                 ds.config = { idxCod, idxStatus, idxDesc, idxSetor, idxResp, idxData, idxValor, isDataVencimento };
-                ds.itens = mapearItensPlanilha(ds.rawData, ds.cabeçalhos, ds.config);
+                ds.cabeçalhos = editCabeçalhos;
+                ds.rawData = editJsonMestreCache;
+                ds.itens = mapearItensPlanilha(dadosPuros, editCabeçalhos, ds.config);
+
+                usaResp = idxResp !== -1; usaData = idxData !== -1; usaValor = idxValor !== -1; usaDesc = idxDesc !== -1; usaSetor = idxSetor !== -1;
             }
 
             try { localStorage.setItem('vis_backup_dados_v17', JSON.stringify(datasetsGlobais)); } catch(e){}
