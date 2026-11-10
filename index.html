@@ -291,6 +291,42 @@
         </div>
     </div>
 
+    <!-- MODAL DE EDIÇÃO DE DASHBOARD -->
+    <div id="modalEditarOverlay" class="tela-overlay config-modal">
+        <div class="setup-box" style="max-width: 700px; padding: 30px; border-top: 4px solid var(--neon-blue);">
+            <h3 style="color: var(--text-main); font-size: 1.5rem; margin-bottom: 5px; font-weight: 800;">✏️ Editar Dashboard</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Altere o nome e reconfigure os parâmetros de colunas do painel selecionado.</p>
+            
+            <div class="map-group full" style="margin-bottom: 20px;">
+                <label style="display: block; color: var(--text-muted); margin-bottom: 8px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Nome do Dashboard</label>
+                <input type="text" id="editNomeDashboard" placeholder="Digite o novo nome..." style="width: 100%; padding: 12px; border-radius: 8px; background-color: var(--bg-color); border: 1px solid #3f3f46; color: var(--text-main); font-size: 1rem; outline: none; transition: border 0.3s;">
+            </div>
+
+            <div class="map-grid" id="editMappingGrid">
+                <div class="map-group full"><label>Identificador Único (Opcional)</label><select id="editMapCodigo"></select></div>
+                <div class="map-group full"><label>Métrica de Status (Opcional)</label><select id="editMapStatus"></select></div>
+                <div class="map-group"><label>Nome / Descrição (Opcional)</label><select id="editMapDesc"></select></div>
+                <div class="map-group"><label>Cidade / Localidade (Opcional)</label><select id="editMapSetor"></select></div>
+                <div class="map-group"><label>Responsável (Opcional)</label><select id="editMapResp"></select></div>
+                <div class="map-group"><label>Data / Prazo (Opcional)</label><select id="editMapData" onchange="verificarToggleDataEdit(this.value)"></select></div>
+                <div class="map-group full"><label>Valor Monetário (R$) (Opcional)</label><select id="editMapValor"></select></div>
+                
+                <div class="map-group full" id="groupComportamentoDataEdit" style="display:none; background: rgba(0, 210, 255, 0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(0, 210, 255, 0.2); margin-top: 5px;">
+                    <label style="color: var(--neon-blue);">Comportamento da Data Mapeada</label>
+                    <select id="editMapDataBehavior" style="background-color: rgba(9, 9, 11, 0.8); border-color: rgba(0, 210, 255, 0.5);">
+                        <option value="informativa">ℹ️ É Data de Aquisição / Auditoria (Apenas Informativo, não gera alertas)</option>
+                        <option value="vencimento">🔴 É um Prazo / Vencimento (Gerar Alertas de Atraso se passar de hoje)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button class="btn-voltar" style="flex: 1; padding: 12px; margin: 0; text-align: center;" onclick="fecharModalConfig('modalEditarOverlay')">Cancelar</button>
+                <button class="btn-gerar" style="flex: 2; display: block; margin: 0; padding: 12px;" onclick="salvarEdicaoDashboard()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL CUSTOMIZADO PARA TAG DE ALTERAÇÃO -->
     <div id="modalTagOverlay" class="tela-overlay config-modal">
         <div class="setup-box" style="max-width: 500px; padding: 30px; border-left: 4px solid var(--neon-blue);">
@@ -436,6 +472,7 @@
             <div class="header-title-box">
                 <h1>GLOBAL DASHBOARD.</h1>
                 <select id="seletorArquivos" class="dataset-switcher" onchange="trocarDatasetDropdown(this.value)"></select>
+                <button class="btn-adicionar" style="background-color: rgba(0, 210, 255, 0.1); color: var(--neon-blue); border-color: var(--neon-blue);" onclick="abrirModalEditarDashboard()">✏️ Editar</button>
                 <button class="btn-adicionar" onclick="document.getElementById('addFileInput').click()">➕ Adicionar Excel</button>
                 <input type="file" id="addFileInput" accept=".xlsx, .xls, .csv" multiple style="display: none;">
                 <span class="modo-badge modo-auto" id="badgeModo" onclick="event.stopPropagation(); iniciarLoopInfinito()" style="cursor: pointer;" title="Forçar modo automático agora">Auto Loop</span>
@@ -651,7 +688,7 @@
             }
         };
 
-        // --- SISTEMA DE NOTIFICAÇÕES (Substitui os alerts nativos) ---
+        // --- SISTEMA DE NOTIFICAÇÕES ---
         function mostrarNotificacao(titulo, mensagem, tipo = 'aviso') {
             const toast = document.getElementById('toastAlerta');
             const tit = document.querySelector('.toast-titulo');
@@ -712,7 +749,7 @@
         }
 
         function abrirModalPersonalizar() {
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             document.getElementById('modalThemeOverlay').classList.add('ativa');
         }
 
@@ -776,6 +813,7 @@
             let str = String(dataStr).trim(); let parts = str.split('/'); if(parts.length === 3) { return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; } return str; 
         }
         function verificarToggleData(valorSelect) { const p = document.getElementById('groupComportamentoData'); p.style.display = (valorSelect !== "") ? 'block' : 'none'; }
+        function verificarToggleDataEdit(valorSelect) { const p = document.getElementById('groupComportamentoDataEdit'); p.style.display = (valorSelect !== "") ? 'block' : 'none'; }
         function exibirErroSetup(mensagem) { const pUpload = document.querySelector('.upload-area p'); if (pUpload) { pUpload.innerText = mensagem; pUpload.style.color = 'var(--neon-error)'; } const telaSetup = document.getElementById('telaSetup'); if (telaSetup) { telaSetup.style.display = 'flex'; telaSetup.style.opacity = '1'; } }
 
         window.onload = async function() {
@@ -831,7 +869,7 @@
                 if (dadosSalvos) { datasetsGlobais = JSON.parse(dadosSalvos); if (datasetsGlobais && datasetsGlobais.length > 0 && datasetsGlobais[0].itens) { await inicializarAmbienteDataset(0); return; } }
             } catch(e) { localStorage.clear(); }
             
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             document.getElementById('telaSetup').style.display = 'flex'; 
         };
 
@@ -855,15 +893,15 @@
             });
         }
 
-        // --- REGRA DE NEGÓCIO ATUALIZADA (DUPLICIDADE E ETIQUETA) ---
+        // --- REGRA DE NEGÓCIO ATUALIZADA ---
         function classificarStatusSenac(statusRaw) {
             let s = String(statusRaw).toLowerCase(); 
             let isNaoLocal = s.includes('não') || s.includes('nao') || s.includes('perdido') || s.includes('falta') || s.includes('sumiu'); 
             let isSemEtiq = s.includes('sem etiqueta') || s.includes('plaqueta') || s.includes('danificad'); 
-            let isEtiquetaOk = s.includes('etiqueta') && !s.includes('sem'); // REGRA: etiqueta em conformidade
+            let isEtiquetaOk = s.includes('etiqueta') && !s.includes('sem');
             let isMovInterna = s.includes('interna') || s.includes('setor'); 
             let isMovExterna = s.includes('entre') || s.includes('externa') || s.includes('transferência') || s.includes('transferencia') || s.includes('outra') || s.includes('unidade'); 
-            let isDuplicidade = s.includes('duplicidade') || s.includes('duplicado'); // REGRA: duplicidade inconformidade
+            let isDuplicidade = s.includes('duplicidade') || s.includes('duplicado');
             
             if (s.includes('movimenta') && !isMovInterna && !isMovExterna) isMovExterna = true; 
             
@@ -877,22 +915,102 @@
             return { class: baseClass, text: statusRaw, tags: { naoLocalizado: isNaoLocal, movInterna: isMovInterna, movExterna: isMovExterna, semEtiq: isSemEtiq, duplicidade: isDuplicidade } };
         }
 
+        function mapearItensPlanilha(dadosPuros, arrCabecalhos, cfg) {
+            let uResp = cfg.idxResp !== -1;
+            let uData = cfg.idxData !== -1;
+            let uValor = cfg.idxValor !== -1;
+            let uDesc = cfg.idxDesc !== -1;
+            let uSetor = cfg.idxSetor !== -1;
+
+            return dadosPuros.map((row, indexRow) => {
+                if (!Array.isArray(row)) return null;
+                let cod = (cfg.idxCod !== -1 && row[cfg.idxCod] !== undefined && row[cfg.idxCod] !== null && String(row[cfg.idxCod]).toLowerCase() !== 'undefined') ? String(row[cfg.idxCod]).trim() : '';
+                if (cod.toUpperCase() === 'TOTAL GERAL') return null; 
+                if (!cod || cod === '') { cod = `REG-${String(indexRow + 1).padStart(4, '0')}`; }
+                
+                const statusRaw = (cfg.idxStatus !== -1 && row[cfg.idxStatus] !== undefined && row[cfg.idxStatus] !== null && String(row[cfg.idxStatus]).trim() !== '') ? row[cfg.idxStatus] : 'Regular'; 
+                let statusInfo = classificarStatusSenac(statusRaw);
+                
+                const valBruto = (uValor && row[cfg.idxValor] !== undefined && row[cfg.idxValor] !== null) ? row[cfg.idxValor] : ''; 
+                const valNum = parseValorNumerico(valBruto);
+                const descRaw = (uDesc && row[cfg.idxDesc] !== undefined && row[cfg.idxDesc] !== null) ? row[cfg.idxDesc] : 'Item sem descrição'; 
+                const setorRaw = (uSetor && row[cfg.idxSetor] !== undefined && row[cfg.idxSetor] !== null) ? row[cfg.idxSetor] : 'Geral'; 
+                const respRaw = (uResp && row[cfg.idxResp] !== undefined && row[cfg.idxResp] !== null) ? row[cfg.idxResp] : '-'; 
+                const dataRaw = (uData && row[cfg.idxData] !== undefined && row[cfg.idxData] !== null) ? row[cfg.idxData] : '-';
+
+                let dataSortCalculada = parseDataBR(dataRaw); 
+                let dataFormatoTabela = dataRaw;
+                if (dataSortCalculada !== '9999-99-99' && !isNaN(dataRaw)) { 
+                    let dtArray = dataSortCalculada.split('-'); 
+                    if(dtArray.length === 3) dataFormatoTabela = `${dtArray[2]}/${dtArray[1]}/${dtArray[0]}`; 
+                }
+                
+                if (uData && dataSortCalculada !== '9999-99-99') {
+                    let itemDate = new Date(dataSortCalculada + "T00:00:00");
+                    if (!isNaN(itemDate.getTime())) { 
+                        let hojeCalc = new Date(); 
+                        hojeCalc.setHours(0,0,0,0); 
+                        let diffDias = Math.floor((itemDate - hojeCalc) / (24 * 60 * 60 * 1000)); 
+                        if (cfg.isDataVencimento) { 
+                            if (diffDias < 0) { 
+                                statusInfo.class = 'erro'; 
+                                statusInfo.text = diffDias === -1 ? 'Vencido ontem' : `Vencido há ${Math.abs(diffDias)} dias`; 
+                            } else if (diffDias <= 30) { 
+                                if (statusInfo.class !== 'erro') { 
+                                    statusInfo.class = 'alerta'; 
+                                    statusInfo.text = diffDias === 0 ? 'Vence Hoje' : `Vence em ${diffDias} dias`; 
+                                } 
+                            } else { 
+                                if (statusInfo.class === 'ok') statusInfo.text = 'No Prazo'; 
+                            } 
+                        } else { 
+                            if (statusInfo.class === 'ok' && (!isNaN(statusRaw) && String(statusRaw).trim() !== '')) { 
+                                statusInfo.text = 'Regular'; 
+                            } 
+                        } 
+                    }
+                } else { 
+                    if (statusInfo.class === 'ok' && !isNaN(statusRaw) && String(statusRaw).trim() !== '') { 
+                        statusInfo.text = 'Regular'; 
+                    } 
+                }
+
+                let valorFinal = uValor ? formatarMoeda(valBruto) : '-'; 
+                if (String(valorFinal).toLowerCase() === 'undefined') valorFinal = '-'; 
+                let statusPesoMatematico = 3; 
+                if (statusInfo.class === 'erro') statusPesoMatematico = 1; 
+                else if (statusInfo.class === 'alerta') statusPesoMatematico = 2; 
+
+                return { 
+                    codigo: cod, 
+                    desc: descRaw, 
+                    setor: setorRaw, 
+                    resp: respRaw, 
+                    data: dataFormatoTabela, 
+                    valorFormatado: valorFinal, 
+                    statusReal: statusInfo.text, 
+                    statusClass: statusInfo.class, 
+                    originalNome: setorRaw, 
+                    valorSort: valNum, 
+                    dataSort: dataSortCalculada, 
+                    statusPeso: statusPesoMatematico, 
+                    tagsSenac: statusInfo.tags 
+                };
+            }).filter(i => i !== null);
+        }
+
         function cancelarSetup() {
-            // Esconde a tela de setup e a seção de mapeamento
             document.getElementById('telaSetup').style.display = 'none';
             document.getElementById('mappingSection').style.display = 'none';
-            
-            // Reseta as variáveis de arquivo
             document.getElementById('fileInput').value = "";
             document.getElementById('addFileInput').value = "";
             arquivosPendentes = [];
             isModoAdicao = false;
             
-            // Volta para o dashboard principal e retoma as atividades
             if (datasetsGlobais.length > 0) {
                 document.getElementById('appContainer').style.display = 'flex';
                 bloqueiaInteracao = false;
-                executarRetornoAoLoop(TEMPO_RETORNO_B); // Reinicia o timer do loop
+                executarRetornoAoLoop(TEMPO_RETORNO_B);
             }
         }
 
@@ -929,28 +1047,24 @@
 
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = false; tagVersaoPendente = "";
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             document.querySelector('.setup-title').innerText = "System Setup"; document.getElementById('btnGerar').innerText = "Inicializar Dashboard";
-            
-            document.getElementById('btnCancelarSetup').style.display = 'none'; // NOVA LINHA: Esconde o botão cancelar
-            
+            document.getElementById('btnCancelarSetup').style.display = 'none';
             arquivosPendentes = Array.from(e.target.files); document.querySelector('.upload-area p').innerText = `⏳ Analisando...`;
             await processarArquivoEGerarPainel(false);
         });
 
         document.getElementById('addFileInput').addEventListener('change', async function(e) {
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = true; tagVersaoPendente = ""; arquivosPendentes = Array.from(e.target.files);
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             document.querySelector('.setup-title').innerText = "Adicionar Novo Dataset"; document.getElementById('btnGerar').innerText = "Adicionar ao Dashboard";
-            
-            document.getElementById('btnCancelarSetup').style.display = 'block'; // NOVA LINHA: Mostra o botão cancelar
-            
+            document.getElementById('btnCancelarSetup').style.display = 'block';
             document.querySelector('.upload-area p').innerText = `⏳ Analisando...`; document.getElementById('telaSetup').style.display = 'flex'; document.getElementById('telaSetup').style.opacity = '1';
             await processarArquivoEGerarPainel(true); document.getElementById('addFileInput').value = ""; 
         });
 
         function iniciarGeracaoPainel() { 
-            pausarLoopInfinito(); // Força a parada do cronômetro de 10 segundos
+            pausarLoopInfinito();
             document.getElementById('inputTagPersonalizada').value = ''; 
             document.getElementById('modalTagOverlay').classList.add('ativa'); 
             setTimeout(() => document.getElementById('inputTagPersonalizada').focus(), 100); 
@@ -976,36 +1090,86 @@
                 let headerRowIdx = 0; let maxCols = 0; for(let k=0; k<Math.min(100, jsonMestreCache.length); k++) { if (!Array.isArray(jsonMestreCache[k])) continue; const cols = jsonMestreCache[k].filter(c => c !== null && c !== undefined && String(c).trim() !== '').length; if (cols > maxCols) { maxCols = cols; headerRowIdx = k; } }
                 let dadosPuros = jsonMestreCache.slice(headerRowIdx + 1);
 
-                let itensMapeados = dadosPuros.map((row, indexRow) => {
-                    if (!Array.isArray(row)) return null;
-                    let cod = (idxCod !== -1 && row[idxCod] !== undefined && row[idxCod] !== null && String(row[idxCod]).toLowerCase() !== 'undefined') ? String(row[idxCod]).trim() : '';
-                    if (cod.toUpperCase() === 'TOTAL GERAL') return null; if (!cod || cod === '') { cod = `REG-${String(indexRow + 1).padStart(4, '0')}`; }
-                    
-                    const statusRaw = (idxStatus !== -1 && row[idxStatus] !== undefined && row[idxStatus] !== null && String(row[idxStatus]).trim() !== '') ? row[idxStatus] : 'Regular'; let statusInfo = classificarStatusSenac(statusRaw);
-                    const valBruto = (usaValor && row[idxValor] !== undefined && row[idxValor] !== null) ? row[idxValor] : ''; const valNum = parseValorNumerico(valBruto);
-                    const descRaw = (usaDesc && row[idxDesc] !== undefined && row[idxDesc] !== null) ? row[idxDesc] : 'Item sem descrição'; const setorRaw = (usaSetor && row[idxSetor] !== undefined && row[idxSetor] !== null) ? row[idxSetor] : 'Geral'; const respRaw = (usaResp && row[idxResp] !== undefined && row[idxResp] !== null) ? row[idxResp] : '-'; const dataRaw = (usaData && row[idxData] !== undefined && row[idxData] !== null) ? row[idxData] : '-';
-
-                    let dataSortCalculada = parseDataBR(dataRaw); let dataFormatoTabela = dataRaw;
-                    if (dataSortCalculada !== '9999-99-99' && !isNaN(dataRaw)) { let dtArray = dataSortCalculada.split('-'); if(dtArray.length === 3) dataFormatoTabela = `${dtArray[2]}/${dtArray[1]}/${dtArray[0]}`; }
-                    
-                    if (usaData && dataSortCalculada !== '9999-99-99') {
-                        let itemDate = new Date(dataSortCalculada + "T00:00:00");
-                        if (!isNaN(itemDate.getTime())) { let hojeCalc = new Date(); hojeCalc.setHours(0,0,0,0); let diffDias = Math.floor((itemDate - hojeCalc) / (24 * 60 * 60 * 1000)); if (configMapeamento.isDataVencimento) { if (diffDias < 0) { statusInfo.class = 'erro'; statusInfo.text = diffDias === -1 ? 'Vencido ontem' : `Vencido há ${Math.abs(diffDias)} dias`; } else if (diffDias <= 30) { if (statusInfo.class !== 'erro') { statusInfo.class = 'alerta'; statusInfo.text = diffDias === 0 ? 'Vence Hoje' : `Vence em ${diffDias} dias`; } } else { if (statusInfo.class === 'ok') statusInfo.text = 'No Prazo'; } } else { if (statusInfo.class === 'ok' && (!isNaN(statusRaw) && String(statusRaw).trim() !== '')) { statusInfo.text = 'Regular'; } } }
-                    } else { if (statusInfo.class === 'ok' && !isNaN(statusRaw) && String(statusRaw).trim() !== '') { statusInfo.text = 'Regular'; } }
-
-                    let valorFinal = usaValor ? formatarMoeda(valBruto) : '-'; if (String(valorFinal).toLowerCase() === 'undefined') valorFinal = '-'; let statusPesoMatematico = 3; if (statusInfo.class === 'erro') statusPesoMatematico = 1; else if (statusInfo.class === 'alerta') statusPesoMatematico = 2; 
-
-                    return { codigo: cod, desc: descRaw, setor: setorRaw, resp: respRaw, data: dataFormatoTabela, valorFormatado: valorFinal, statusReal: statusInfo.text, statusClass: statusInfo.class, originalNome: setorRaw, valorSort: valNum, dataSort: dataSortCalculada, statusPeso: statusPesoMatematico, tagsSenac: statusInfo.tags };
-                }).filter(i => i !== null);
+                let itensMapeados = mapearItensPlanilha(dadosPuros, cabeçalhos, configMapeamento);
 
                 let nomeBase = (arquivosPendentes && arquivosPendentes[0]) ? arquivosPendentes[0].name.replace(/\.[^/.]+$/, "") : "Dataset"; let nomeFinal = nomeBase;
                 if (tagVersaoPendente !== "") { nomeFinal = `${nomeBase} [${tagVersaoPendente.toUpperCase()}]`; } else { let somaValCalc = itensMapeados.reduce((acc, it) => acc + (it.valorSort || 0), 0); let strValor = somaValCalc >= 1000000 ? (somaValCalc / 1000000).toFixed(1).replace('.', ',') + 'M' : (somaValCalc >= 1000 ? (somaValCalc / 1000).toFixed(1).replace('.', ',') + 'k' : somaValCalc.toLocaleString('pt-BR')); nomeFinal = `${nomeBase} (${itensMapeados.length} Itens | R$ ${strValor})`; }
 
                 if (!isModoAdicao) { datasetsGlobais = []; }
-                datasetsGlobais.push({ nome: nomeFinal, itens: itensMapeados }); tagVersaoPendente = ""; 
+                datasetsGlobais.push({ nome: nomeFinal, itens: itensMapeados, rawData: dadosPuros, cabeçalhos: cabeçalhos, config: {...configMapeamento} }); tagVersaoPendente = ""; 
                 try { localStorage.setItem('vis_backup_dados_v17', JSON.stringify(datasetsGlobais)); } catch(e) {}
                 let novoIndex = isModoAdicao ? (datasetsGlobais.length - 1) : 0; await inicializarAmbienteDataset(novoIndex); isModoAdicao = false; 
             } catch (fatalError) { exibirErroSetup("🚨 Falha ao carregar dados. Verifique a estrutura da planilha."); }
+        }
+
+        // --- LÓGICA DA MODAL DE EDIÇÃO DE DASHBOARD ---
+        function abrirModalEditarDashboard() {
+            if (datasetsGlobais.length === 0) {
+                mostrarNotificacao("Aviso", "Nenhum dashboard carregado para editar.", "aviso");
+                return;
+            }
+            pausarLoopInfinito();
+            let idx = parseInt(document.getElementById('seletorArquivos').value) || 0;
+            let ds = datasetsGlobais[idx];
+            if (!ds) return;
+
+            document.getElementById('editNomeDashboard').value = ds.nome || '';
+            
+            let grid = document.getElementById('editMappingGrid');
+            if (ds.cabeçalhos && ds.cabeçalhos.length > 0) {
+                grid.style.display = 'grid';
+                const selects = ['editMapCodigo', 'editMapDesc', 'editMapSetor', 'editMapStatus', 'editMapResp', 'editMapData', 'editMapValor'];
+                selects.forEach(selId => { 
+                    document.getElementById(selId).innerHTML = '<option value="">-- Ignorar --</option>' + ds.cabeçalhos.map((h, i) => `<option value="${i}">${h}</option>`).join(''); 
+                });
+
+                let cfg = ds.config || {};
+                document.getElementById('editMapCodigo').value = (cfg.idxCod !== undefined && cfg.idxCod !== -1) ? cfg.idxCod : '';
+                document.getElementById('editMapStatus').value = (cfg.idxStatus !== undefined && cfg.idxStatus !== -1) ? cfg.idxStatus : '';
+                document.getElementById('editMapDesc').value = (cfg.idxDesc !== undefined && cfg.idxDesc !== -1) ? cfg.idxDesc : '';
+                document.getElementById('editMapSetor').value = (cfg.idxSetor !== undefined && cfg.idxSetor !== -1) ? cfg.idxSetor : '';
+                document.getElementById('editMapResp').value = (cfg.idxResp !== undefined && cfg.idxResp !== -1) ? cfg.idxResp : '';
+                document.getElementById('editMapData').value = (cfg.idxData !== undefined && cfg.idxData !== -1) ? cfg.idxData : '';
+                document.getElementById('editMapValor').value = (cfg.idxValor !== undefined && cfg.idxValor !== -1) ? cfg.idxValor : '';
+                document.getElementById('editMapDataBehavior').value = cfg.isDataVencimento ? 'vencimento' : 'informativa';
+                
+                verificarToggleDataEdit(document.getElementById('editMapData').value);
+            } else {
+                grid.style.display = 'none';
+            }
+
+            document.getElementById('modalEditarOverlay').classList.add('ativa');
+        }
+
+        async function salvarEdicaoDashboard() {
+            let idx = parseInt(document.getElementById('seletorArquivos').value) || 0;
+            let ds = datasetsGlobais[idx];
+            if (!ds) return;
+
+            let novoNome = document.getElementById('editNomeDashboard').value.trim();
+            if (novoNome) ds.nome = novoNome;
+
+            if (ds.rawData && ds.cabeçalhos) {
+                let valCod = document.getElementById('editMapCodigo').value;
+                let valStatus = document.getElementById('editMapStatus').value;
+                let idxCod = valCod !== "" ? parseInt(valCod) : -1;
+                let idxStatus = valStatus !== "" ? parseInt(valStatus) : -1;
+                let idxDesc = document.getElementById('editMapDesc').value !== "" ? parseInt(document.getElementById('editMapDesc').value) : -1;
+                let idxSetor = document.getElementById('editMapSetor').value !== "" ? parseInt(document.getElementById('editMapSetor').value) : -1;
+                let idxResp = document.getElementById('editMapResp').value !== "" ? parseInt(document.getElementById('editMapResp').value) : -1;
+                let idxData = document.getElementById('editMapData').value !== "" ? parseInt(document.getElementById('editMapData').value) : -1;
+                let idxValor = document.getElementById('editMapValor').value !== "" ? parseInt(document.getElementById('editMapValor').value) : -1;
+                let isDataVencimento = document.getElementById('editMapDataBehavior').value === 'vencimento';
+
+                ds.config = { idxCod, idxStatus, idxDesc, idxSetor, idxResp, idxData, idxValor, isDataVencimento };
+                ds.itens = mapearItensPlanilha(ds.rawData, ds.cabeçalhos, ds.config);
+            }
+
+            try { localStorage.setItem('vis_backup_dados_v17', JSON.stringify(datasetsGlobais)); } catch(e){}
+
+            fecharModalConfig('modalEditarOverlay');
+            await inicializarAmbienteDataset(idx);
+            mostrarNotificacao("Dashboard Atualizado", "Nome e configurações alterados com sucesso!", "ok");
         }
 
         async function inicializarAmbienteDataset(index) { const seletor = document.getElementById('seletorArquivos'); seletor.innerHTML = datasetsGlobais.map((ds, i) => `<option value="${i}">📁 ${ds.nome}</option>`).join(''); seletor.value = index; todosOsItens = datasetsGlobais[index].itens; await atualizarDashboard(); document.getElementById('telaSetup').style.display = 'none'; document.getElementById('appContainer').style.display = 'flex'; iniciarLoopInfinito(); }
@@ -1055,7 +1219,6 @@
             try {
                 if (typeof L === 'undefined') return;
                 if (mapaInstancia) { mapaInstancia.remove(); }
-                // Foco Inicial sempre em Mato Grosso
                 mapaInstancia = L.map('mapaBase', {zoomControl: false, attributionControl: false, doubleClickZoom: false}).setView([-13.0, -56.0], 6);
                 L.tileLayer(currentMapTileUrl, { maxZoom: 12 }).addTo(mapaInstancia);
                 let cidadesMapeadas = {}; const chaves = Object.keys(countSetor);
@@ -1066,7 +1229,6 @@
                     let nomesArr = Array.from(data.nomes); let popupContainer = document.createElement('div'); popupContainer.className = 'custom-popup-content'; popupContainer.innerHTML = `<div class="popup-title">${data.cityName}</div><div style="font-size: 0.85rem; margin-bottom: 8px; color: var(--text-muted); display: flex; justify-content: space-between;">Status Senac: <strong style="color:${data.hex}; text-transform:uppercase;">${data.maxTierName}</strong></div><div style="font-size: 0.7rem; color: var(--text-muted); text-align: left; background: rgba(0,0,0,0.1); border: 1px solid rgba(161, 161, 170, 0.2); padding: 5px; border-radius: 4px; margin-bottom: 12px;">${data.qtdMovExterna} Incons. Mov. Externa<br>${data.qtdMovInterna} Incons. Mov. Interna<br>${data.qtdSemEtiq} Sem Etiqueta</div><div class="btn-inventario-popup">📁 Abrir Inventário</div>`; popupContainer.querySelector('.btn-inventario-popup').addEventListener('click', () => { abrirVisaoDetalhadaManual(`INVENTÁRIO LOCAL: ${data.cityName}`, nomesArr); mapaInstancia.closePopup(); }); marker.bindPopup(popupContainer); marker.on('dblclick', function(e) { this.openPopup(); }); bounds.push(data.coords);
                 }
                 
-                // MUDANÇA PRINCIPAL PARA O ZOOM: Ajuste do padding e maxZoom (7) para não abrir para a América do Sul
                 if(bounds.length > 0) { mapaInstancia.fitBounds(bounds, {padding: [50, 50], maxZoom: 7, animate: true}); } 
                 setTimeout(() => { if (mapaInstancia) mapaInstancia.invalidateSize(); }, 350);
             } catch(e) {}
@@ -1186,7 +1348,7 @@
 
         let allShareChecked = true;
         function abrirModalCompartilhar() {
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             const container = document.getElementById('shareCheckboxesContainer');
             if (datasetsGlobais.length === 0) { container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 15px;">Nenhum dashboard carregado no momento.</div>`; } else { container.innerHTML = datasetsGlobais.map((ds, i) => `<div class="share-checkbox-row" onclick="const cb = document.getElementById('chkShare_${i}'); if(event.target.tagName !== 'INPUT') cb.checked = !cb.checked; atualizarTextoBtnToggleShare();"><input type="checkbox" id="chkShare_${i}" value="${i}" checked><label for="chkShare_${i}">📁 ${ds.nome}</label></div>`).join(''); }
             allShareChecked = true; atualizarTextoBtnToggleShare(); document.getElementById('modalShareOverlay').classList.add('ativa');
@@ -1251,7 +1413,6 @@
 
         function fecharModalConfig(modalId) {
             document.getElementById(modalId).classList.remove('ativa');
-            // Só religa o modo de espera se já havia um dashboard aberto
             if (document.getElementById('appContainer').style.display !== 'none' && !bloqueiaInteracao) {
                 executarRetornoAoLoop(TEMPO_RETORNO_B);
             }
@@ -1259,7 +1420,7 @@
 
         // --- FUNÇÕES DA LIXEIRA ---
         function abrirModalExclusao() {
-            pausarLoopInfinito(); // Evitar fechamento automático
+            pausarLoopInfinito();
             const container = document.getElementById('deleteCheckboxesContainer');
             if (datasetsGlobais.length === 0) {
                 container.innerHTML = `<div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 15px;">Nenhum dashboard carregado.</div>`;
@@ -1284,7 +1445,6 @@
                 return;
             }
             
-            // Pega os índices marcados de trás para frente para não bagunçar a ordem ao deletar
             const indexesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.value)).sort((a, b) => b - a);
             indexesToDelete.forEach(idx => { datasetsGlobais.splice(idx, 1); });
             
@@ -1292,14 +1452,11 @@
             
             fecharModalConfig('modalExcluirOverlay');
             mostrarNotificacao("Sucesso", "Os painéis selecionados foram excluídos.", "ok");
-            
-            // Reinicia o dashboard no primeiro painel disponível
             await inicializarAmbienteDataset(0);
         }
 
         let bloqueiaInteracao = false;
         
-        // MODIFICADO: Ignora as telas de configuração
         function fecharTodasTelasOverlay() { 
             document.querySelectorAll('.tela-overlay:not(.config-modal)').forEach(el => el.classList.remove('ativa')); 
             clearInterval(contadorVisualTelas); 
@@ -1323,7 +1480,6 @@
         function iniciarLoopInfinito() { bloqueiaInteracao = true; modoAutonomo = true; atualizarBadgeModo('modo-auto', 'Auto Loop'); clearTimeout(timerLoopAuto); fecharTodasTelasOverlay(); document.querySelectorAll('.badge-timer-overlay').forEach(tb => tb.style.display = 'none'); proximoQuadroLoop(); setTimeout(() => { bloqueiaInteracao = false; }, 1000); }
         function proximoQuadroLoop() { if (!modoAutonomo) return; fecharTodasTelasOverlay(); const quadro = quadrosLoop[indiceQuadroAtual]; let tempoDesteQuadro = TEMPO_LOOP_AUTO; if (quadro.tipo === 'detalhes') { abrirVisaoDetalhadaManual(quadro.titulo, quadro.filtro); modoAutonomo = true; } else if (quadro.tipo === 'mapa_foco') { exibirVisaoMapaFoco(quadro.filtro); modoAutonomo = true; } else if (quadro.tipo === 'graficos') { exibirVisaoEstatisticas(); if (globalQtdRisco === 0) { tempoDesteQuadro = 5000; } modoAutonomo = true; } const loopBar = document.getElementById('loopProgressBar'); loopBar.style.transition = 'none'; loopBar.style.width = '0%'; setTimeout(() => { loopBar.style.transition = `width ${tempoDesteQuadro}ms linear`; loopBar.style.width = '100%'; }, 50); if(quadro.tipo === 'graficos' && globalQtdRisco === 0) { const innerBar = document.getElementById('timerEstatisticaFill'); if (innerBar) { innerBar.style.transition = 'none'; innerBar.style.width = '0%'; setTimeout(() => { innerBar.style.transition = `width ${tempoDesteQuadro}ms linear`; innerBar.style.width = '100%'; }, 50); } } indiceQuadroAtual = (indiceQuadroAtual + 1) % quadrosLoop.length; timerLoopAuto = setTimeout(proximoQuadroLoop, tempoDesteQuadro); }
         
-        // MODIFICADO: Impede que o timer reinicie na tela de configuração
         function registrarInteracaoUsuario(e) { 
             if (document.querySelector('.tela-overlay.config-modal.ativa') || document.getElementById('telaSetup').style.display !== 'none') {
                 return;
