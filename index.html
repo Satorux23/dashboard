@@ -282,7 +282,11 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn-gerar" id="btnGerar" onclick="iniciarGeracaoPainel()">Inicializar Dashboard</button>
+                
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button class="btn-voltar" id="btnCancelarSetup" onclick="cancelarSetup()" style="display: none; padding: 15px; flex: 1; margin: 0; width: auto; text-align: center;">Cancelar</button>
+                    <button class="btn-gerar" id="btnGerar" onclick="iniciarGeracaoPainel()" style="margin-top: 0; flex: 2; display: block;">Inicializar Dashboard</button>
+                </div>
             </div>
         </div>
     </div>
@@ -873,6 +877,25 @@
             return { class: baseClass, text: statusRaw, tags: { naoLocalizado: isNaoLocal, movInterna: isMovInterna, movExterna: isMovExterna, semEtiq: isSemEtiq, duplicidade: isDuplicidade } };
         }
 
+        function cancelarSetup() {
+            // Esconde a tela de setup e a seção de mapeamento
+            document.getElementById('telaSetup').style.display = 'none';
+            document.getElementById('mappingSection').style.display = 'none';
+            
+            // Reseta as variáveis de arquivo
+            document.getElementById('fileInput').value = "";
+            document.getElementById('addFileInput').value = "";
+            arquivosPendentes = [];
+            isModoAdicao = false;
+            
+            // Volta para o dashboard principal e retoma as atividades
+            if (datasetsGlobais.length > 0) {
+                document.getElementById('appContainer').style.display = 'flex';
+                bloqueiaInteracao = false;
+                executarRetornoAoLoop(TEMPO_RETORNO_B); // Reinicia o timer do loop
+            }
+        }
+
         async function processarArquivoEGerarPainel(isAdicao = false) {
             try {
                 if (typeof XLSX === 'undefined') { exibirErroSetup("🚨 Biblioteca XLSX não carregada. Conecte-se à internet."); return false; }
@@ -908,6 +931,9 @@
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = false; tagVersaoPendente = "";
             pausarLoopInfinito(); // Evitar fechamento automático
             document.querySelector('.setup-title').innerText = "System Setup"; document.getElementById('btnGerar').innerText = "Inicializar Dashboard";
+            
+            document.getElementById('btnCancelarSetup').style.display = 'none'; // NOVA LINHA: Esconde o botão cancelar
+            
             arquivosPendentes = Array.from(e.target.files); document.querySelector('.upload-area p').innerText = `⏳ Analisando...`;
             await processarArquivoEGerarPainel(false);
         });
@@ -916,6 +942,9 @@
             if (!e.target.files || e.target.files.length === 0) return; isModoAdicao = true; tagVersaoPendente = ""; arquivosPendentes = Array.from(e.target.files);
             pausarLoopInfinito(); // Evitar fechamento automático
             document.querySelector('.setup-title').innerText = "Adicionar Novo Dataset"; document.getElementById('btnGerar').innerText = "Adicionar ao Dashboard";
+            
+            document.getElementById('btnCancelarSetup').style.display = 'block'; // NOVA LINHA: Mostra o botão cancelar
+            
             document.querySelector('.upload-area p').innerText = `⏳ Analisando...`; document.getElementById('telaSetup').style.display = 'flex'; document.getElementById('telaSetup').style.opacity = '1';
             await processarArquivoEGerarPainel(true); document.getElementById('addFileInput').value = ""; 
         });
