@@ -25,7 +25,6 @@
             --neon-orange: #ff9900; 
             --neon-error: #ff3366; 
             --neon-blue: #00d2ff;
-            /* Variáveis do Mapa Otimizadas para Claridade */
             --map-blend-mode: normal;
             --map-opacity: 1;
             --map-filter: grayscale(80%) contrast(1.2) brightness(1.2);
@@ -781,7 +780,8 @@
         let chartStatusInst = null; let chartGruposInst = null; let chartFinanceiroInst = null; 
         let mapaInstancia = null; let mapaFocoInstancia = null; let arrayCidadesAtuais = null; let multiStatusAtuais = null;
 
-        const TEMPO_LOOP_AUTO = 10000; const TEMPO_CARENCIA = 3000; const TEMPO_RETORNO_A = 15000; const TEMPO_RETORNO_B = 10000;
+        // AJUSTADO TEMPO DO AUTO LOOP PARA 25 SEGUNDOS (25000ms)
+        const TEMPO_LOOP_AUTO = 25000; const TEMPO_CARENCIA = 3000; const TEMPO_RETORNO_A = 15000; const TEMPO_RETORNO_B = 10000;
         
         const quadrosLoop = [ { tipo: 'dashboard' }, { tipo: 'mapa_foco', titulo: 'MAPA DE COBERTURA: CONFORMIDADE', filtro: 'ok' }, { tipo: 'graficos', titulo: 'ANÁLISE ESTATÍSTICA E FINANCEIRA' }, { tipo: 'detalhes', titulo: 'LISTA DE ITENS EM CONFORMIDADE', filtro: 'ok' } ];
 
@@ -893,7 +893,6 @@
             });
         }
 
-        // --- REGRA DE NEGÓCIO ATUALIZADA ---
         function classificarStatusSenac(statusRaw) {
             let s = String(statusRaw).toLowerCase(); 
             let isNaoLocal = s.includes('não') || s.includes('nao') || s.includes('perdido') || s.includes('falta') || s.includes('sumiu'); 
@@ -1102,7 +1101,6 @@
             } catch (fatalError) { exibirErroSetup("🚨 Falha ao carregar dados. Verifique a estrutura da planilha."); }
         }
 
-        // --- LÓGICA DA MODAL DE EDIÇÃO DE DASHBOARD ---
         function abrirModalEditarDashboard() {
             if (datasetsGlobais.length === 0) {
                 mostrarNotificacao("Aviso", "Nenhum dashboard carregado para editar.", "aviso");
@@ -1418,7 +1416,6 @@
             }
         }
 
-        // --- FUNÇÕES DA LIXEIRA ---
         function abrirModalExclusao() {
             pausarLoopInfinito();
             const container = document.getElementById('deleteCheckboxesContainer');
