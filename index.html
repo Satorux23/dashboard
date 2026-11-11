@@ -1389,21 +1389,125 @@
         function removerAcentos(str) { return str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
         
         function aplicarFiltrosTabela() {
-            let sCidade = document.getElementById('filtroCidade').value; let sStatus = document.getElementById('filtroStatus').value; let sPrazo = document.getElementById('filtroPrazo').value; let tipoBusca = document.getElementById('tipoBuscaAvancada').value; let sTextoBruto = document.getElementById('filtroAvancadoTexto').value;
-            let filtrados = todosOsItens.filter(i => { let matchCidade = true; if (sCidade === 'MULTI' && arrayCidadesAtuais) { matchCidade = arrayCidadesAtuais.includes(i.setor); } else if (sCidade !== 'TODOS') { matchCidade = i.setor === sCidade; } let matchStatus = true; if (sStatus === 'MULTI_STATUS' && multiStatusAtuais) { matchStatus = multiStatusAtuais.includes(i.statusClass); } else if (sStatus !== 'TODOS') { matchStatus = i.statusClass === sStatus; } let matchPrazo = sPrazo === 'TODOS' || i.data === sPrazo; let matchTexto = true; if (sTextoBruto.trim() !== '') { if (tipoBusca === 'valor') { let valBaseNumeros = String(i.valorFormatado).replace(/\D/g, ''); let valBuscaNumeros = sTextoBruto.replace(/\D/g, ''); matchTexto = valBaseNumeros.includes(valBuscaNumeros); } else { let textoBase = ""; if (tipoBusca === 'desc') textoBase = i.desc; if (tipoBusca === 'id') textoBase = i.codigo; if (tipoBusca === 'resp') textoBase = i.resp; textoBase = removerAcentos(String(textoBase).toLowerCase()); let palavrasBusca = removerAcentos(sTextoBruto.toLowerCase()).split(" ").filter(p => p.trim() !== ""); matchTexto = palavrasBusca.every(palavra => textoBase.includes(palavra)); } } return matchCidade && matchStatus && matchPrazo && matchTexto; });
+            let sCidade = document.getElementById('filtroCidade').value; 
+            let sStatus = document.getElementById('filtroStatus').value; 
+            let sPrazo = document.getElementById('filtroPrazo').value; 
+            let tipoBusca = document.getElementById('tipoBuscaAvancada').value; 
+            let sTextoBruto = document.getElementById('filtroAvancadoTexto').value;
+            
+            // 1. Aplicação de Filtros Base
+            let filtrados = todosOsItens.filter(i => { 
+                let matchCidade = true; if (sCidade === 'MULTI' && arrayCidadesAtuais) { matchCidade = arrayCidadesAtuais.includes(i.setor); } else if (sCidade !== 'TODOS') { matchCidade = i.setor === sCidade; } 
+                let matchStatus = true; if (sStatus === 'MULTI_STATUS' && multiStatusAtuais) { matchStatus = multiStatusAtuais.includes(i.statusClass); } else if (sStatus !== 'TODOS') { matchStatus = i.statusClass === sStatus; } 
+                let matchPrazo = sPrazo === 'TODOS' || i.data === sPrazo; 
+                let matchTexto = true; 
+                if (sTextoBruto.trim() !== '') { 
+                    if (tipoBusca === 'valor') { 
+                        let valBaseNumeros = String(i.valorFormatado).replace(/\D/g, ''); let valBuscaNumeros = sTextoBruto.replace(/\D/g, ''); matchTexto = valBaseNumeros.includes(valBuscaNumeros); 
+                    } else { 
+                        let textoBase = ""; if (tipoBusca === 'desc') textoBase = i.desc; if (tipoBusca === 'id') textoBase = i.codigo; if (tipoBusca === 'resp') textoBase = i.resp; 
+                        textoBase = removerAcentos(String(textoBase).toLowerCase()); 
+                        let palavrasBusca = removerAcentos(sTextoBruto.toLowerCase()).split(" ").filter(p => p.trim() !== ""); 
+                        matchTexto = palavrasBusca.every(palavra => textoBase.includes(palavra)); 
+                    } 
+                } 
+                return matchCidade && matchStatus && matchPrazo && matchTexto; 
+            });
+            
             let sOrdem = document.getElementById('filtroOrdenacao').value;
             filtrados.sort((a, b) => { if(sOrdem === 'valor_maior') return b.valorSort - a.valorSort; if(sOrdem === 'valor_menor') return a.valorSort - b.valorSort; if(sOrdem === 'data_prox') return String(a.dataSort).localeCompare(String(b.dataSort)); if(sOrdem === 'data_dist') return String(b.dataSort).localeCompare(String(a.dataSort)); if(sOrdem === 'id_az') return String(a.codigo).localeCompare(String(b.codigo)); if(sOrdem === 'resp_az') return String(a.resp).localeCompare(String(b.resp)); if(sOrdem === 'local_az') return String(a.setor).localeCompare(String(b.setor)); if(sOrdem === 'status_crit') { if (a.statusPeso === b.statusPeso) { return String(a.dataSort).localeCompare(String(b.dataSort)); } return a.statusPeso - b.statusPeso; } return 0; });
-            const hoje = new Date(); hoje.setHours(0,0,0,0); const msPorDia = 24 * 60 * 60 * 1000; let somaValorFiltro = 0; let maxDiasAtraso = -1;
-            filtrados.forEach(i => { somaValorFiltro += i.valorSort || 0; if (i.dataSort && i.dataSort !== '9999-99-99') { let itemData = new Date(i.dataSort + "T00:00:00"); if(!isNaN(itemData.getTime())) { let diffDias = Math.floor((hoje - itemData) / msPorDia); if (i.statusClass !== 'ok' && diffDias > maxDiasAtraso) { maxDiasAtraso = diffDias; } } } });
-            document.getElementById('kpiDetalhesQtd').innerText = filtrados.length; document.getElementById('kpiDetalhesValor').innerText = formatarMoeda(somaValorFiltro);
-            if (maxDiasAtraso > 0) { document.getElementById('kpiDetalhesAtraso').innerText = `${maxDiasAtraso} dias`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value risco'; } else if (maxDiasAtraso === 0) { document.getElementById('kpiDetalhesAtraso').innerText = `Vence Hoje`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value risco'; } else { document.getElementById('kpiDetalhesAtraso').innerText = `No Prazo`; document.getElementById('kpiDetalhesAtraso').className = 'bento-value ok'; }
+            
+            const hoje = new Date(); hoje.setHours(0,0,0,0); const msPorDia = 24 * 60 * 60 * 1000; 
+            let somaValorFiltro = 0; let maxDiasAtraso = -1;
+
+            // 2. Verifica se a Data é Informativa ou Vencimento (baseado no config do dashboard ativo)
+            let idxSel = parseInt(document.getElementById('seletorArquivos').value) || 0;
+            let isVencimento = datasetsGlobais[idxSel] && datasetsGlobais[idxSel].config ? datasetsGlobais[idxSel].config.isDataVencimento : false;
+
+            // 3. Calcula total financeiro e identifica Atraso Máximo OU Idade Máxima
+            filtrados.forEach(i => { 
+                somaValorFiltro += i.valorSort || 0; 
+                if (i.dataSort && i.dataSort !== '9999-99-99') { 
+                    let itemData = new Date(i.dataSort + "T00:00:00"); 
+                    if(!isNaN(itemData.getTime())) { 
+                        let diffDias = Math.floor((hoje - itemData) / msPorDia); 
+                        if (isVencimento) {
+                            // Trata como Vencimento: Pega o maior atraso apenas de itens não conformes
+                            if (i.statusClass !== 'ok' && diffDias > maxDiasAtraso) { maxDiasAtraso = diffDias; } 
+                        } else {
+                            // Trata como Aquisição/Informativo: Pega o item mais velho (Idade) globalmente
+                            if (diffDias > maxDiasAtraso) { maxDiasAtraso = diffDias; }
+                        }
+                    } 
+                } 
+            });
+
+            document.getElementById('kpiDetalhesQtd').innerText = filtrados.length; 
+            document.getElementById('kpiDetalhesValor').innerText = formatarMoeda(somaValorFiltro);
+            
+            // 4. Lógica Dinâmica do KPI de Data (Título e Valor)
+            let kpiValorEl = document.getElementById('kpiDetalhesAtraso');
+            let kpiTituloEl = kpiValorEl.previousElementSibling; 
+            kpiValorEl.style.textShadow = "none"; // Reseta estilos
+            kpiValorEl.style.color = "";
+
+            if (isVencimento) {
+                kpiTituloEl.innerText = "Atraso Máximo (Pior Cenário)";
+                if (maxDiasAtraso > 0) { 
+                    kpiValorEl.innerText = `${maxDiasAtraso} dias`; 
+                    kpiValorEl.className = 'bento-value risco'; 
+                } else if (maxDiasAtraso === 0) { 
+                    kpiValorEl.innerText = `Vence Hoje`; 
+                    kpiValorEl.className = 'bento-value risco'; 
+                } else { 
+                    kpiValorEl.innerText = `No Prazo`; 
+                    kpiValorEl.className = 'bento-value ok'; 
+                }
+            } else {
+                kpiTituloEl.innerText = "Idade Máxima do Item";
+                if (maxDiasAtraso >= 0) { 
+                    let anos = Math.floor(maxDiasAtraso / 365);
+                    let resto = maxDiasAtraso % 365;
+                    kpiValorEl.innerText = anos > 0 ? `${anos}a ${resto}d` : `${maxDiasAtraso} dias`; 
+                    kpiValorEl.className = 'bento-value';
+                    kpiValorEl.style.color = "var(--neon-blue)"; 
+                    kpiValorEl.style.textShadow = "0 0 15px rgba(0, 210, 255, 0.3)";
+                } else {
+                    kpiValorEl.innerText = `-`; 
+                    kpiValorEl.className = 'bento-value';
+                }
+            }
+            
             let colTemplate = `1.2fr 3fr 1.5fr`; if (usaResp) colTemplate += ` 1.5fr`; if (usaData) colTemplate += ` 1fr`; if (usaValor) colTemplate += ` 1.2fr`; colTemplate += ` 1.5fr`; 
-            let theadHTML = `<div class="card-list-header" style="grid-template-columns: ${colTemplate};"><div>Identificador</div><div>Descrição</div><div>Localidade</div>`; if (usaResp) theadHTML += `<div>Responsável</div>`; if (usaData) fluidHTML = true; if (usaData) theadHTML += `<div>Data / Prazo</div>`; if (usaValor) theadHTML += `<div>Valor</div>`; theadHTML += `<div>Status</div></div>`; document.getElementById('tabelaCabecalho').innerHTML = theadHTML;
+            let theadHTML = `<div class="card-list-header" style="grid-template-columns: ${colTemplate};"><div>Identificador</div><div>Descrição</div><div>Localidade</div>`; if (usaResp) theadHTML += `<div>Responsável</div>`; if (usaData) theadHTML += `<div>Data / Prazo</div>`; if (usaValor) theadHTML += `<div>Valor</div>`; theadHTML += `<div>Status</div></div>`; 
+            document.getElementById('tabelaCabecalho').innerHTML = theadHTML;
+            
+            // 5. Renderização da Tabela (Ignorando efeito 'Pulse' se não for Vencimento)
             const tbody = document.getElementById('tabelaCorpo');
-            if (filtrados.length === 0) { tbody.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted); font-size: 1.2rem;">Nenhum registro encontrado.</div>`; } else { tbody.innerHTML = filtrados.map(i => { 
-                let highValueBadge = (i.valorSort >= 100000) ? `<span class="high-value-badge-feed" style="font-size:0.65rem;">★ ALTO IMPACTO</span>` : ``; let badgeClassAdicional = ""; 
-                if (i.statusClass === 'erro' && i.dataSort && i.dataSort !== '9999-99-99') { let itemData = new Date(i.dataSort + "T00:00:00"); if(!isNaN(itemData.getTime())) { let diffDias = Math.floor((hoje - itemData) / msPorDia); if (diffDias > 60) { badgeClassAdicional = "status-vencido-pulse"; } } } 
-                let row = `<div class="card-row" style="grid-template-columns: ${colTemplate};"><div class="card-col-id">${i.codigo}</div><div>${i.desc} ${highValueBadge}</div><div>${i.setor}</div>`; if (usaResp) row += `<div>${i.resp === '' ? '-' : i.resp}</div>`; if (usaData) row += `<div>${i.data === '' ? '-' : i.data}</div>`; if (usaValor) row += `<div style="color:var(--neon-blue); font-weight: 800; font-size: 1.05rem;">${i.valorFormatado}</div>`; row += `<div><span class="badge-status status-${i.statusClass} ${badgeClassAdicional}">${i.statusReal}</span></div></div>`; return row; }).join(''); }
+            if (filtrados.length === 0) { 
+                tbody.innerHTML = `<div style="text-align:center; padding: 40px; color:var(--text-muted); font-size: 1.2rem;">Nenhum registro encontrado.</div>`; 
+            } else { 
+                tbody.innerHTML = filtrados.map(i => { 
+                    let highValueBadge = (i.valorSort >= 100000) ? `<span class="high-value-badge-feed" style="font-size:0.65rem;">★ ALTO IMPACTO</span>` : ``; 
+                    let badgeClassAdicional = ""; 
+                    
+                    // Pulse Error APENAS se for Vencimento, Status for Erro e tiver passado +60 dias
+                    if (isVencimento && i.statusClass === 'erro' && i.dataSort && i.dataSort !== '9999-99-99') { 
+                        let itemData = new Date(i.dataSort + "T00:00:00"); 
+                        if(!isNaN(itemData.getTime())) { 
+                            let diffDias = Math.floor((hoje - itemData) / msPorDia); 
+                            if (diffDias > 60) { badgeClassAdicional = "status-vencido-pulse"; } 
+                        } 
+                    } 
+                    
+                    let row = `<div class="card-row" style="grid-template-columns: ${colTemplate};"><div class="card-col-id">${i.codigo}</div><div>${i.desc} ${highValueBadge}</div><div>${i.setor}</div>`; 
+                    if (usaResp) row += `<div>${i.resp === '' ? '-' : i.resp}</div>`; 
+                    if (usaData) row += `<div>${i.data === '' ? '-' : i.data}</div>`; 
+                    if (usaValor) row += `<div style="color:var(--neon-blue); font-weight: 800; font-size: 1.05rem;">${i.valorFormatado}</div>`; 
+                    row += `<div><span class="badge-status status-${i.statusClass} ${badgeClassAdicional}">${i.statusReal}</span></div></div>`; 
+                    return row; 
+                }).join(''); 
+            }
         }
 
         function abrirVisaoDetalhadaManual(titulo, filtroCidadeStatus, filtroStatusOpcional = null, overrideTipoBusca = null, overrideTextoBusca = null, forceOrdemRisco = false) { 
